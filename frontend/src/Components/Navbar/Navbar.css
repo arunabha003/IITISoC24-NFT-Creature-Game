@@ -1,0 +1,158 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color:#0f0f23;
+    padding: 10px 20px;
+}
+header .logo {
+    font-size: 25px;
+  font-weight: bold;
+  background: linear-gradient(90deg, #0b5b8a, #640db6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.navbar{
+    display: flex;
+    background-color:#0f0f23;
+    justify-content: space-around;
+    padding:16px;
+    box-shadow: 0 1px 3px -2px  black;
+}
+.nav-logo{
+    display: flex;
+    size: 10px;
+    align-items: center;
+}
+img{
+    width: 85px;
+    height:80px;
+    position: relative;
+    top: 0px; 
+    right: 50px;
+}
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
+}
+
+.nav-login button {
+    background-color: #031b63; /* Set background color */
+    color: white; /* Set text color */
+    padding: 10px 15px; /* Set padding */
+    border: 2px solid white; /* Remove border */
+    border-radius: 30px;
+    cursor: pointer; /* Add hover effect */
+    font-family: Orbitron;
+    font-size: 150%;
+    font-variant: small-caps;
+}
+
+.nav-login button {
+    position: absolute !important;
+    top: 45px !important;
+    right: -50px !important;
+    width: 175px !important;
+    transform: translate(-50%, -50%) !important;
+}
+.marketplace button{
+    background-color: #031b63; /* Set background color */
+    color: white; /* Set text color */
+    padding: 10px 15px; /* Set padding */
+    border: 2px solid white;
+    border-radius: 10px; /* Add border radius */
+    cursor: pointer; /* Add hover effect */
+    font-family: Orbitron;
+    position: relative;
+    top: 0px; /* Move the element 100 pixels down from its normal position */
+    left: -290px;
+}
+.yourCritters button{
+    background-color: #031b63; /* Set background color */
+    color: white; /* Set text color */
+    padding: 10px 15px; /* Set padding */
+    border: 2px solid white;
+    border-radius: 10px; /* Add border radius */
+    cursor: pointer; /* Add hover effect */
+    font-family: Orbitron;
+    position: relative;
+    top: 0px; /* Move the element 100 pixels down from its normal position */
+    left: -250px;
+}
+.information button{
+    background-color: #031b63; /* Set background color */
+    color: white; /* Set text color */
+    padding: 10px 15px; /* Set padding */
+    border: 2px solid white;
+    border-radius: 10px; /* Add border radius */
+    cursor: pointer; /* Add hover effect */
+    font-family: Orbitron;
+    position: relative;
+    top: 0px; /* Move the element 100 pixels down from its normal position */
+    left: -215px;
+}
+.contact-us button{
+    background-color: #031b63; /* Set background color */
+    color: white; /* Set text color */
+    padding: 10px 15px; /* Set padding */
+    border: 2px solid white;
+    border-radius: 10px; /* Add border radius */
+    cursor: pointer; /* Add hover effect */
+    font-family: Orbitron;
+    position: relative;
+    top: 0px; /* Move the element 100 pixels down from its normal position */
+    left: -180px;
+}
+.announcements button{
+    background-color: #031b63; /* Set background color */
+    color: white; /* Set text color */
+    padding: 10px 15px; /* Set padding */
+    border: 2px solid white; /* Remove border */
+    border-radius: 10px; /* Add border radius */
+    cursor: pointer; /* Add hover effect */
+    font-family: Orbitron;
+    position: relative;
+    top: 0px; /* Move the element 100 pixels down from its normal position */
+    left: -150px;
+}
+.home button{
+    background-color: #031b63; /* Set background color */
+    color: white; /* Set text color */
+    padding: 10px 15px; /* Set padding */
+    border: 2px solid white; /* Remove border */
+    border-radius: 10px; /* Add border radius */
+    cursor: pointer; /* Add hover effect */
+    font-family: Orbitron;
+    position: relative;
+    top: 0px; /* Move the element 100 pixels down from its normal position */
+    left: -1050px;
+}
+.battlenow{
+    background-color: #031b63; /* Set background color */
+    color: white; /* Set text color */
+    padding: 10px 15px; /* Set padding */
+    border: 2px solid white;
+    border-radius: 10px; /* Add border radius */
+    cursor: pointer; /* Add hover effect */
+    font-family: Orbitron;
+    position: relative;
+    top: -5px; /* Move the element 100 pixels down from its normal position */
+    left: -1300px;
+}
+
+
+.btn:before{
+animation :rotate 2s infinte linear;
+filter: blur(20px);
+}
+.btn.btninner{
+    position:relative;
+    display:flex;
+    width:100%;
+    z-index:1;
+    transition: all 0.18s ease;
+    backdrop-filter: blur(40px);
+    backface-visibility: hidden;
+}
