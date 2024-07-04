@@ -1,0 +1,17 @@
+# Ignore all files in the node_modules directory
+node_modules/
+public/
+
+
+# Ignore all files with .md extension
+*.md
+
+# Ignore specific file
+build/       # Ignore the build directory
+coverage/    # Ignore coverage reports
+
+#Ignore .env files
+.env
+.env.*
+
+./dist
