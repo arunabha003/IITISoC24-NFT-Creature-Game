@@ -1,5 +1,4 @@
 import dotenv from 'dotenv' 
-import express from 'express'
 import { connectDB } from './database/index.js'
 import { app } from './app.js'
 
@@ -10,10 +9,10 @@ dotenv.config({
 
 connectDB()
 .then(()=>{
-    app.listen((`App listening on PORT : ${process.env.PORT}`))
+    app.listen(process.env.PORT,()=>console.log(`App listening on PORT : ${process.env.PORT}`))
 })
 .catch((err)=>{
-    console.log("Port Connection Failed")
+    console.log("Port Connection Failed",err)
 })
 
 
