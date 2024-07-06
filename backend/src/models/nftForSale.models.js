@@ -20,4 +20,4 @@ const nftForSaleSchema = new Schema(
     {timestamps:true}
 )
 
-export const nftforSale = mongoose.model('NftforSale',nftForSaleSchema)
+export const NftforSale = mongoose.model('NftforSale',nftForSaleSchema)

@@ -25,4 +25,4 @@ const transactionHistorySchema = new Schema(
     {timestamps:true}
 )
 
-export const transactionHistory = mongoose.model('TransactionHistory',transactionHistorySchema)
+export const TransactionHistory = mongoose.model('TransactionHistory',transactionHistorySchema)

@@ -21,4 +21,4 @@ const battleRecordSchema = new Schema(
     {timestamps:true}
 )
 
-export const battleRecord = mongoose.model('battleRecord',battleRecordSchema)
+export const BattleRecord = mongoose.model('BattleRecord',battleRecordSchema)

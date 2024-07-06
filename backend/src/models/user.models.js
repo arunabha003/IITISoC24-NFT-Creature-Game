@@ -7,12 +7,10 @@ const userSchema = new Schema(
         username:{
             type:String,
             required:[true,"Username Required"],
-            unique:[true,"Username already registered"],
         },
         password:{
             type:String,
             required:[true,"Password Required"],
-            unique:true,
         },
         displayName:{
             type:String
@@ -29,12 +27,16 @@ const userSchema = new Schema(
                 type: mongoose.Schema.Types.ObjectId,
                 ref:"Critter"
             }
-        ]
+        ],
+        refreshToken:{
+            type:String,
+            default: null
+        }
     },
     {timestamps:true}
 )
 
-export const user = mongoose.model('User',userSchema)
+export const User = mongoose.model('User',userSchema)
 
 userSchema.pre("save",async function(next){
     if(!this.isModified("password")) return next(); 

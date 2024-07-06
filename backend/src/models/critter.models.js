@@ -16,4 +16,4 @@ const critterSchema  = new mongoose.Schema(
     }
 )
 
-export const critter = mongoose.model('Critter',critterSchema)
+export const Critter = mongoose.model('Critter',critterSchema)
