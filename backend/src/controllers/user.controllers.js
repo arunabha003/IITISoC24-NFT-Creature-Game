@@ -3,6 +3,8 @@ import {User} from "../models/user.models.js"
 import ApiResponse from "../utils/apiResponse.js"
 import ApiError from "../utils/apiError.js" 
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import bcrypt from 'bcrypt'
+
 
 //testing
 // const  hiiUser = asyncHandler(async(req,res)=>{
@@ -36,10 +38,12 @@ const registerUser = asyncHandler(async(req,res)=>{
     avatarURL = uploadResponse.secure_url
     }
 
+    const hashedPassword = await bcrypt.hash(password,12)
+
     const user = await User.create(
         {
             username:username.toLowerCase(),
-            password:password,
+            password:hashedPassword,
             displayName:displayName,
             avatar:avatarURL,
             walletAddress:walletAddress
@@ -64,7 +68,30 @@ const registerUser = asyncHandler(async(req,res)=>{
     )
 })
 
+const login = asyncHandler(async(req,res)=>{
+    const {username,password} = req.body
+
+    console.log(username)
+
+    const user = await User.findOne({
+        $or:[{username},{password}]
+    })
+
+    console.log(username)
+
+    if(!user){
+        throw new ApiError(400,"User doesn't exist")
+    }
+    let isPassValid='hgdsj'
+
+    isPassValid = await user.isPasswordValid(password)
+
+    console.log(isPassValid)
+
+
+})
 export {
-    registerUser
+    registerUser,
+    login
 }
 
