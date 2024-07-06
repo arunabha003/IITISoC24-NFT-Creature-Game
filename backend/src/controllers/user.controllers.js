@@ -13,6 +13,22 @@ import bcrypt from 'bcrypt'
 
 //RegisterUser
 
+const generateAccessAndRefreshTokens = async(userId)=>{
+    try{
+        const user = await User.findById(userId)
+        const accessToken = await user.generateAccessToken()
+        const refreshToken =  user.generateRefreshToken()
+
+        user.refreshToken = refreshToken
+        await user.save({validateBeforeSave:false})
+
+        return {accessToken,refreshToken}
+
+    }catch(error){
+        throw new ApiError(500,"error in generating access token")
+    }
+}
+
 const registerUser = asyncHandler(async(req,res)=>{
     const {username,password,displayName,walletAddress,avatar} = req.body
 
@@ -71,8 +87,6 @@ const registerUser = asyncHandler(async(req,res)=>{
 const login = asyncHandler(async(req,res)=>{
     const {username,password,walletAddress} = req.body
 
-    console.log(username)
-
     const user = await User.findOne({
         $or:[{username},{walletAddress}]
     })
@@ -82,13 +96,20 @@ const login = asyncHandler(async(req,res)=>{
     }
     let isPassValid
 
-    isPassValid = await user.isPasswordValid(password)
+    isPassValid = await bcrypt.compare(password,user.password)
 
     if(!isPassValid){
-        console.log(isPassValid)
         throw new ApiError(400,"incorrect details")
     }
-    res.status(200)
+
+    const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(user._id)
+
+    console.log(accessToken)
+    res
+    .status(200)
+    .json(
+        new ApiResponse(200,"User Logged In Successfully")
+    )
 
 })
 export {
