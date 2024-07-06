@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs'
 
-export const uploadOnCloudinary = async function (fileURL){
+export const uploadOnCloudinary = async function (filePath){
 
     // Configuration
     cloudinary.config({ 
@@ -13,7 +13,7 @@ export const uploadOnCloudinary = async function (fileURL){
     // Upload an image
      const uploadResponse = await cloudinary.uploader
        .upload(
-           fileURL, {
+           filePath, {
               resource_type:"image"
            }
        )
@@ -22,7 +22,7 @@ export const uploadOnCloudinary = async function (fileURL){
        });
      
        //Unlink or Remove image from locally saved temp folder
-       fs.unlinkSync(fileURL)
-       return null
+       fs.unlinkSync(filePath)
+       return uploadResponse
     
 };

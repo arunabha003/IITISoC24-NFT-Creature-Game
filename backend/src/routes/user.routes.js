@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { registerUser } from "../controllers/user.controllers.js";
+import {upload} from '../middlewares/file-upload-multer.middlewares.js'
 
 const userRouter = Router()
 
@@ -7,7 +8,7 @@ const userRouter = Router()
 // userRouter.route("/hii").get(hiiUser)
 
 //Registration
-userRouter.route("/register").post(registerUser)
+userRouter.route("/register").post(upload.single('avatar'),registerUser)
 
 
 export default userRouter
