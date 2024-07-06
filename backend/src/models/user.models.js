@@ -34,9 +34,7 @@ const userSchema = new Schema(
         }
     },
     {timestamps:true}
-)
-
-export const User = mongoose.model('User',userSchema)
+);
 
 userSchema.pre("save",async function(next){
     if(!this.isModified("password")) return next(); 
@@ -61,7 +59,7 @@ userSchema.methods.generateAccessToken = function(){
         }
     )
 }
-userSchema.methods.refreshToken = function(){
+userSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id:this._id, 
@@ -73,3 +71,5 @@ userSchema.methods.refreshToken = function(){
         
     )
 }
+
+export const User = mongoose.model('User',userSchema)

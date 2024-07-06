@@ -38,7 +38,7 @@ const registerUser = asyncHandler(async(req,res)=>{
     avatarURL = uploadResponse.secure_url
     }
 
-    const hashedPassword = await bcrypt.hash(password,12)
+    const hashedPassword = await bcrypt.hash(password,10)
 
     const user = await User.create(
         {
@@ -69,25 +69,26 @@ const registerUser = asyncHandler(async(req,res)=>{
 })
 
 const login = asyncHandler(async(req,res)=>{
-    const {username,password} = req.body
+    const {username,password,walletAddress} = req.body
 
     console.log(username)
 
     const user = await User.findOne({
-        $or:[{username},{password}]
+        $or:[{username},{walletAddress}]
     })
-
-    console.log(username)
 
     if(!user){
         throw new ApiError(400,"User doesn't exist")
     }
-    let isPassValid='hgdsj'
+    let isPassValid
 
     isPassValid = await user.isPasswordValid(password)
 
-    console.log(isPassValid)
-
+    if(!isPassValid){
+        console.log(isPassValid)
+        throw new ApiError(400,"incorrect details")
+    }
+    res.status(200)
 
 })
 export {

@@ -9,7 +9,7 @@ const userRouter = Router()
 
 //Registration
 userRouter.route("/register").post(upload.single('avatar'),registerUser)
-userRouter.route("/login").post(login)
+userRouter.route("/login").post(upload.none(),login)
 
 
 export default userRouter
