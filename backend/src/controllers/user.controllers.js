@@ -92,11 +92,9 @@ const registerUser = asyncHandler(async(req,res)=>{
 })
 
 const login = asyncHandler(async(req,res)=>{
-    const {username,password,walletAddress} = req.body
+    const {password,walletAddress} = req.body
 
-    const user = await User.findOne({
-        $or:[{username},{walletAddress}]
-    })
+    const user = await User.findOne({walletAddress:walletAddress})
 
     if(!user){
         throw new ApiError(400,"User doesn't exist")
@@ -111,6 +109,8 @@ const login = asyncHandler(async(req,res)=>{
 
     const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(user._id)
 
+    console.log("userLoggedIn")
+    
     res
     .status(200)
     .cookie("accessToken",accessToken,options)
