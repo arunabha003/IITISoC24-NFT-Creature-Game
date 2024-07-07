@@ -5,14 +5,15 @@ import ApiError from "../utils/apiError.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import bcrypt from 'bcrypt'
 
-
 //testing
 // const  hiiUser = asyncHandler(async(req,res)=>{
 //     res.send("hii")
 // })
 
-//RegisterUser
-
+const options = {
+    httpOnly:true,
+    secure:true
+}
 const generateAccessAndRefreshTokens = async(userId)=>{
     try{
         const user = await User.findById(userId)
@@ -104,16 +105,36 @@ const login = asyncHandler(async(req,res)=>{
 
     const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(user._id)
 
-    console.log(accessToken)
     res
     .status(200)
+    .cookie("accessToken",accessToken,options)
+    .cookie("refreshToken",refreshToken,options)
     .json(
         new ApiResponse(200,"User Logged In Successfully")
     )
 
 })
+
+const logout = asyncHandler(async(req,res)=>{
+    await User.findByIdAndUpdate(req.user._id,{
+        $set:{
+            refreshToken : undefined
+        }
+    },{new:true})
+
+    res
+    .status(200)
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
+    .json(
+        new ApiResponse(200,"User logged Out Successfully")
+    )
+
+})
+
 export {
     registerUser,
-    login
+    login,
+    logout
 }
 
