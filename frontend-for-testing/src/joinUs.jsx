@@ -1,17 +1,31 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { connectMetamask } from '../utils/connectMetamask'
 
 function JoinUs() {
   const [registerStatus, setregisterStatus] = useState("Register")
-  async function submitForm(e){
+  const [walletAddress, setwalletAddress] = useState("Null")
+  const [walletConnectStatus,setwalletConnectStatus] = useState("Please Connect your Wallet")
 
-    e.preventDefault()
+  async function useMetamask(){
+    const {connectedWalletAddress,provider,signer} = await connectMetamask()
+    setwalletAddress(connectedWalletAddress)
+    setwalletConnectStatus("Wallet Connected")
+  }
   
+  async function submitForm(e){
+    e.preventDefault()
+
+    if(walletConnectStatus=="Please Connect your Wallet"){
+      console.log("Wallet Disconnected")
+      return null
+    }
+    
     const formData = {
       username:`${e.target.username.value}`,
       password:`${e.target.password.value}`,
       displayName:`${e.target.displayName.value}`,
-      walletAddress:`${e.target.walletAddress.value}`
+      walletAddress:`${walletAddress}`
     }
     try {
       await axios.post("http://localhost:5000/api/v1/user/register",formData)
@@ -21,9 +35,13 @@ function JoinUs() {
     }
   }
 
+  
+
   return (
     <div>
       <div>Join Us</div>
+      <button onClick={useMetamask}>{walletConnectStatus}</button>
+      <h3>Connected Address : {walletAddress}</h3>
       <form id='registrationForm' onSubmit={submitForm}>
 
         <label>Username</label>
@@ -37,10 +55,11 @@ function JoinUs() {
         <br></br>
         <label>displayName</label>
         <input type='text' id="displayName"></input>
-        <br></br>
-        <label>walletAddress</label>
-        <input type='text' id="walletAddress"></input>
         <button onSubmit={submitForm}>{registerStatus}</button>
+        <br></br>
+     
+       
+        
       </form>
       
     </div>

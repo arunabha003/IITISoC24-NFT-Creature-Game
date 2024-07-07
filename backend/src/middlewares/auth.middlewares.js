@@ -6,6 +6,8 @@ import { User } from "../models/user.models.js";
 export const verifyTokens = asyncHandler(async(req,res,next)=>{
     const token = req.cookies?.accessToken
 
+    let connectedWallet
+
     if(!token){
         throw new ApiError(400,"Access Token Error, login again")
     }
@@ -16,6 +18,14 @@ export const verifyTokens = asyncHandler(async(req,res,next)=>{
     const user = await User.findById(decodedToken._id).select("-password -refreshToken")
     if(!user){
         throw new ApiError(401,"Invalid Access Token")
+    }
+
+    if (!connectedWallet) {
+        throw new ApiError(400, "Missing walletAddress in request");
+    }
+
+    if(user.walletAddress!=connectedWallet){
+        throw new ApiError(401,"Connect wallet associate with the profile")
     }
 
     req.user = user

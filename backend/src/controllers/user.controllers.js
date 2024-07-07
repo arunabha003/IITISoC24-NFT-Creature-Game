@@ -1,5 +1,6 @@
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {User} from "../models/user.models.js"
+import { Critter } from '../models/critter.models.js'
 import ApiResponse from "../utils/apiResponse.js"
 import ApiError from "../utils/apiError.js" 
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
@@ -79,6 +80,10 @@ const registerUser = asyncHandler(async(req,res)=>{
         throw new ApiError(500,"Some issue in creating user from Server Side")
     }
 
+    if(createdUser){
+        console.log("user created successfully")
+    }
+
     res
     .status(200)
     .json(
@@ -133,9 +138,36 @@ const logout = asyncHandler(async(req,res)=>{
 
 })
 
+const getCrittersHeHave = asyncHandler(async (req,res)=>{
+    const userId = req.body._id
+
+    const crittersHaveByUserId = await Critter.aggregate([
+    {
+        $match: {
+            master:userId //Match all field in Critter Database whose master is userId
+        },
+        
+    },
+    {
+        $project:{
+            name: 1,
+            tokenId: 1,
+            nickname: 1
+        }
+    }
+    ])
+
+    res
+    .status(200)
+    .json(
+         new ApiResponse(200,crittersHaveByUserId,"Critters User Has Successfully Retrieved")
+    )
+}) 
+
 export {
     registerUser,
     login,
-    logout
+    logout,
+    getCrittersHeHave
 }
 

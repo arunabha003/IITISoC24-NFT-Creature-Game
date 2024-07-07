@@ -12,6 +12,11 @@ const critterSchema  = new mongoose.Schema(
         },
         nickname:{
             type:String,
+        },
+        master:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User",
+            required:true
         }
     }
 )

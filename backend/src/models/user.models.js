@@ -22,12 +22,6 @@ const userSchema = new Schema(
         avatar:{
             type:String,
         },
-        crittersHave:[
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref:"Critter"
-            }
-        ],
         refreshToken:{
             type:String,
             default: null
