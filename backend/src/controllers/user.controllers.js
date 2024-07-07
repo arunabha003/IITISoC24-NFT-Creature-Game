@@ -32,6 +32,7 @@ const generateAccessAndRefreshTokens = async(userId)=>{
 
 const registerUser = asyncHandler(async(req,res)=>{
     const {username,password,displayName,walletAddress,avatar} = req.body
+    console.log(username)
 
     if(!((username?.trim())||(password?.trim())||(walletAddress?.trim()))){
         throw new ApiError(400,"Fill the Required Details")
