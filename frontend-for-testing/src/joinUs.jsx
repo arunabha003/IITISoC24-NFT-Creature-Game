@@ -1,8 +1,18 @@
 import { useState } from 'react'
 import axios from 'axios'
 import { connectMetamask } from '../utils/connectMetamask'
+import { useNavigate } from 'react-router-dom';
+
 
 function JoinUs() {
+
+  //claim your first nft page
+  const navigate = useNavigate();
+  const handleClaimNFT = () => {
+    navigate('/user/register/claimFirstCritter');
+  };
+
+
   const [registerStatus, setregisterStatus] = useState("Register")
   const [walletAddress, setwalletAddress] = useState("Null")
   const [walletConnectStatus,setwalletConnectStatus] = useState("Please Connect your Wallet")
@@ -29,7 +39,7 @@ function JoinUs() {
     }
     try {
       await axios.post("http://localhost:5000/api/v1/user/register",formData)
-      setregisterStatus("Registered : Now please login")
+      setregisterStatus("Registered")
     } catch (error) {
       console.log("registration failed",error)
     }
@@ -57,7 +67,14 @@ function JoinUs() {
         <input type='text' id="displayName"></input>
         <button onSubmit={submitForm}>{registerStatus}</button>
         <br></br>
-     
+
+      {registerStatus=="Registered" &&(
+        <>
+        <h3>Thank you for Registering in Game</h3>
+        <p>Claim your first Critter</p>
+        <button onClick={handleClaimNFT}>CLAIM</button>
+        </>
+      )}
        
         
       </form>

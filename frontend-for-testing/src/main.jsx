@@ -4,7 +4,7 @@ import App from './App.jsx'
 import './index.css'
 import JoinUs from './joinUs.jsx'
 import LoginPage from './loginPage.jsx'
-
+import ClaimFirstCritter from './claimFirstCritter.jsx'
 import {
   createBrowserRouter,
   RouterProvider,
@@ -22,7 +22,12 @@ const router = createBrowserRouter([
   {
     path:'/user/login',
     element: <LoginPage/>
-  }]
+  },
+  {
+    path:'/user/register/claimFirstCritter',
+    element: <ClaimFirstCritter/>
+  }
+]
 )
 
 
