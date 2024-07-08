@@ -12,12 +12,15 @@ import bcrypt from 'bcrypt'
 // })
 
 const options = {
-    httpOnly:true,
-    secure:true
+    httpOnly: true,
+    secure:true,
 }
 const generateAccessAndRefreshTokens = async(userId)=>{
     try{
         const user = await User.findById(userId)
+        if(!user){
+            throw new ApiError(400,"cant find user how to generate cookies for him")
+        }
         const accessToken = await user.generateAccessToken()
         const refreshToken =  user.generateRefreshToken()
 
@@ -81,10 +84,14 @@ const registerUser = asyncHandler(async(req,res)=>{
     }
 
     if(createdUser){
-        console.log("user created successfully")
+        console.log("user created successfully")   
     }
 
+    const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(user._id)
+
     res
+    .cookie("accessToken",accessToken,options)
+    .cookie("refreshToken",refreshToken,options)
     .status(200)
     .json(
         new ApiResponse(200,"User Created Successfully")
@@ -109,12 +116,13 @@ const login = asyncHandler(async(req,res)=>{
 
     const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(user._id)
 
-    console.log("userLoggedIn")
+    console.log(accessToken)
+    console.log("userloggedIn")
     
     res
-    .status(200)
     .cookie("accessToken",accessToken,options)
     .cookie("refreshToken",refreshToken,options)
+    .status(200)
     .json(
         new ApiResponse(200,"User Logged In Successfully")
     )
@@ -135,6 +143,8 @@ const logout = asyncHandler(async(req,res)=>{
     .json(
         new ApiResponse(200,"User logged Out Successfully")
     )
+    
+    console.log("logged out succesfully")
 
 })
 
@@ -164,10 +174,25 @@ const getCrittersHeHave = asyncHandler(async (req,res)=>{
     )
 }) 
 
+const userProfile = asyncHandler(async(req,res)=>{
+    try {
+        const user = await User.findById(req.user._id).select("-password -refreshToken")
+        if(!user){
+            throw new ApiError(500,"couldn't find user")
+        }
+        res
+        .status(200)
+        .json(user)
+    } catch (error) {
+        throw new ApiError(500,"couldn't find user")
+    }
+})
+
 export {
     registerUser,
     login,
     logout,
-    getCrittersHeHave
+    getCrittersHeHave,
+    userProfile
 }
 
