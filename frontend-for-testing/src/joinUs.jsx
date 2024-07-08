@@ -31,14 +31,28 @@ function JoinUs() {
       return null
     }
     
-    const formData = {
-      username:`${e.target.username.value}`,
-      password:`${e.target.password.value}`,
-      displayName:`${e.target.displayName.value}`,
-      walletAddress:`${walletAddress}`
-    }
+    // const formData = {
+    //   username:`${e.target.username.value}`,
+    //   password:`${e.target.password.value}`,
+    //   displayName:`${e.target.displayName.value}`,
+    //   walletAddress:`${walletAddress}`,
+    //   avatar:`${e.target.avatar.files[0]}`
+    // }
+
+    const formData = new FormData();
+        formData.append('username', e.target.username.value);
+        formData.append('password', e.target.password.value);
+        formData.append('displayName', e.target.displayName.value);
+        formData.append('walletAddress', walletAddress);
+        formData.append('avatar', e.target.avatar.files[0]);
     try {
-      await axios.post("http://localhost:5000/api/v1/user/register",formData)
+      await axios.post("http://localhost:5000/api/v1/user/register",formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+        }
+      )
       setregisterStatus("Registered")
     } catch (error) {
       console.log("registration failed",error)
@@ -52,13 +66,13 @@ function JoinUs() {
       <div>Join Us</div>
       <button onClick={useMetamask}>{walletConnectStatus}</button>
       <h3>Connected Address : {walletAddress}</h3>
-      <form id='registrationForm' onSubmit={submitForm}>
+      <form id='registrationForm' onSubmit={submitForm} encType="multipart/form-data">
 
         <label>Username</label>
         <input type='text'  id="username"></input>
         <br></br>
         <label>Choose Avatar</label>
-        <input type='file'></input>
+        <input type='file' id="avatar" name="avatar"></input>
         <br></br>
         <label>password</label>
         <input type='text' id="password"></input>
