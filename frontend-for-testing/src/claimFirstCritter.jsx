@@ -9,6 +9,9 @@ import axios from 'axios'
 
 const ClaimFirstCritter = () => {
 
+    //add page reload if metamask connect account changes
+    //there is useeffect when page loads currently which captures current account keep in mind
+
     let [selectedCritterAddress, setselectedCritterAddress] = useState(null)
     let [critterOneData, setcritterOneData] = useState({})
     let [critterTwoData, setcritterTwoData] = useState({})

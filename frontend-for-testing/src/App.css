@@ -33,10 +33,25 @@
   }
 }
 
-.card {
+/* .card {
   padding: 2em;
-}
+} */
 
 .read-the-docs {
   color: #888;
+}
+/* styles.css (or use Bootstrap classes) */
+
+.card {
+  width: 18rem;
+  margin-bottom: 1rem;
+}
+
+.card-img-top {
+  height: 200px; /* Adjust as needed */
+  object-fit: cover;
+}
+
+.card-body {
+  text-align: left;
 }

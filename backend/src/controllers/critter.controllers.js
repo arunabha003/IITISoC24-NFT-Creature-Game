@@ -28,13 +28,11 @@ const claimNFT = asyncHandler(async(req,res)=>{
             critterImageUrl:critterImageUrl
         })
 
-        await User.findByIdAndUpdate(master._id,{
+       await User.findByIdAndUpdate(master._id,{
             $set:{
                 gotHisPartner : true
             }
         },{new:true})
-
-        
     
         await critter.save()
         res
@@ -47,6 +45,25 @@ const claimNFT = asyncHandler(async(req,res)=>{
     }
     
 })
+
+const fetchCritters = asyncHandler(async(req,res)=>{
+
+        const masterId = req.user._id
+
+        if(!masterId){
+            throw new ApiError(400,"User doesn't exist")
+        }
+    
+        const creatures = await Critter.find({ master: masterId }).exec();
+    
+        res
+        .status(200)
+        .json(creatures)
+
+    
+})
+
 export {
-    claimNFT
+    claimNFT,
+    fetchCritters
 }

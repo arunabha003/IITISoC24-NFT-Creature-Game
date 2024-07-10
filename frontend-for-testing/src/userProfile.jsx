@@ -12,6 +12,10 @@ const UserProfile = () => {
   const handleHomePage = () => {
     navigate('/homepage');
     };
+  
+  const handleYourCrittersPage = ()=>{
+    navigate('/yourCritters')
+  }
 
   useEffect(() => {
       fetchUserProfile()
@@ -39,11 +43,14 @@ const UserProfile = () => {
   return (
     <>
     {userData && (<> 
-      <img src={userData.avatar} alt="Avatar" />
+          <img src={userData.avatar} alt="Avatar" />
           <p>Username: {userData.username}</p>
           <p>Wallet Address: {userData.walletAddress}</p>
           <p>yahan your critters bhi add krna hoga yaa to seperate page is better just click bitch here</p>
-          <p>Battles lost : </p>
+          <p>Battles Won : {userData.battlesWon}</p>
+          <p>Battles lost : {userData.battlesLost}</p>
+
+          <p>Your Critters : <button onClick={handleYourCrittersPage}> CLICK</button></p>
     </>)}
     <br></br>
     <button onClick={logout}>Logout</button>
