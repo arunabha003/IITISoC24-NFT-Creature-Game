@@ -5,16 +5,11 @@ import {ethers} from 'ethers'
 import { ABI } from './nftABI.js'
 import {connectMetamask} from '../utils/connectMetamask.js'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'
 
 const ClaimFirstCritter = () => {
 
-    const navigate = useNavigate();
-    
-    const handleUserProfile = () => {
-    navigate('/user/userProfile');
-    };
-
-    let [selectedCritter, setselectedCritter] = useState("")
+    let [selectedCritterAddress, setselectedCritterAddress] = useState(null)
     let [critterOneData, setcritterOneData] = useState({})
     let [critterTwoData, setcritterTwoData] = useState({})
     let [critterThreeData, setcritterThreeData] = useState({})
@@ -24,57 +19,121 @@ const ClaimFirstCritter = () => {
     let [provider, setProvider] = useState(null);
     let [signer, setSigner] = useState(null);
     let[selectedCritterName,setselectedCritterName] = useState("None")
+    let[selectedCritterImage,setselectedCritterImage] = useState(null)
+    let[nickname,setNickname]=useState(null)
+    let[connectedUserAddress,setconnectedUserAddress]=useState(null)
+    let[claimStatus,setclaimStatus]=useState(null)
+
+    const formData = new FormData();
+    
+    const navigate = useNavigate();
+
+    axios.defaults.withCredentials = true;
+
+    const walletVerification = async()=>{
+        const response = await axios.post('http://localhost:5000/api/v1/check/onSameWallet', { connectedAddress: walletAddress },{withCredentials:true});
+        const { isValid } = response.data;
+
+        if (!isValid) {
+          console.log('Wallet address is not verified for this user.');
+          return isValid;
+        }
+        return isValid
+    }
+
+    let[tokenId,setTokenId] = useState(null)
+    
+    const nftClaimTransaction = () => {
+        if (connectedUserAddress) {
+            if (walletVerification) {
+                setTokenIDD()
+            }
+        }
+    
+    };
+    let[formdataresponse,setformdataresponse] = useState(null)
+
+    //data append in form
+    useEffect(() => {
+        if(tokenId>0){
+            console.log("token id : ",tokenId)
+            try {
+                formData.append('address', selectedCritterAddress);
+                formData.append('name', selectedCritterName);
+                formData.append('critterImageUrl', selectedCritterImage);
+                formData.append('tokenId', tokenId);  
+                if (nickname) {
+                    formData.append('nickname', nickname);
+                }
+                console.log("Form Data Content: ", formDataToJSON(formData));
+                setformDataJson(formDataToJSON(formData))
+            } catch (error) {
+                console.log("error is adding form data")
+            }
+        }
+    }, [tokenId])
+
+    let[formDataJson,setformDataJson] = useState(null)
+
+    useEffect(()=>{
+        if (formDataJson) {
+                    setformdataresponse(true)
+        }  
+    },[formDataJson])
+
+    useEffect(() => {
+        if(formdataresponse){
+            const response = addCritterDataInDatabase()
+            if (response) {
+                setclaimStatus(true)
+            }
+        }
+      }, [formdataresponse])   
+
+
+    useEffect(() => {
+      if(claimStatus){
+        navigate('/user/userProfile');
+      }
+    }, [claimStatus])
+    
+    
+
+    const addCritterDataInDatabase = async ()=>{
+        try {
+            await axios.post("http://localhost:5000/api/v1/critter/claimFirstCritter",formDataJson,{withCredentials:true})
+            return true
+        }catch(error){
+            console.log("cant add critterindatabase mssg from jsx",error)
+        }
+    }
 
     async function useMetamask(){
         const {connectedWalletAddress,provider,signer} = await connectMetamask()
         setProvider(provider);
+        setconnectedUserAddress(connectedWalletAddress)
         setSigner(signer);
     }
 
-    const getURIOne= async()=>{
-        const oneURI = await getURI("0x5a8d131cdf5502b28D34FE504f846A2F14C52c40")
-        console.log(oneURI)
-        setcritterOneURI(oneURI)
-    }
-    const getURI2= async()=>{
-        const twoURI = await getURI("")
-        console.log(twoURI)
-        setcritter2URI(twoURI)
-    }
-    const getURI3= async()=>{
-        const threeURI = await getURI("")
-        console.log(threeURI)
-        setcritter3URI(threeURI)
-    }
       
     //start of claimFirst page
     useEffect(() => {
       useMetamask()
+      setcritterOneURI("https://arweave.net/NX8bgt_tAInNCZBghiieHtorhmxTWvPXt4uaIfZsl8s")
+      setcritter2URI("https://arweave.net/tIo5TyRdIfrALtOqD2wRx168ZAMBwEVVDBgr3nRtZFc")
+      setcritter3URI("https://arweave.net/zO488RIiPYLNoYWESpOs53Ha5W7hnZ9LHpjK9IBnewA")
     },[])
 
     useEffect(() => {
         if (signer && provider) {
-          getURIOne()
-          getURI2()
-          getURI3()
-
+        fetchDataOne()
+        fetchDataTwo()
+        fetchDataThree()
         }
       }, [signer, provider]);
 
-    useEffect(() => {
-        if(critterOneURI){
-            fetchDataOne(critterOneURI)
-        }
-        if(critter2URI){
-            fetchDataTwo(critter2URI)
-        }
-        if(critter3URI){
-            fetchDataThree(critter3URI)
-        }
-    }, [critterOneURI]);
-
-    async function fetchDataOne(e){
-        fetch(e)
+    async function fetchDataOne(){
+        fetch(critterOneURI)
         .then((response)=>{
             return response.json()
         })
@@ -82,8 +141,8 @@ const ClaimFirstCritter = () => {
             setcritterOneData(data)
         })
     }
-    async function fetchDataTwo(e){
-        fetch(e)
+    async function fetchDataTwo(){
+        fetch(critter2URI)
         .then((response)=>{
             return response.json()
         })
@@ -91,8 +150,8 @@ const ClaimFirstCritter = () => {
             setcritterTwoData(data)
         })
     }
-    async function fetchDataThree(e){
-        fetch(e)
+    async function fetchDataThree(){
+        fetch(critter3URI)
         .then((response)=>{
             return response.json()
         })
@@ -101,34 +160,61 @@ const ClaimFirstCritter = () => {
         })
     }
     
-
-    async function getURI(ContractAddress){
+    async function claimCritter(){
         if(typeof window.ethereum!="undefined"){
-            const contract = new ethers.Contract(ContractAddress.toString(),ABI,signer)
+            const contract = new ethers.Contract(selectedCritterAddress.toString(),ABI,signer)
             try{
-                let _tokenURI = await contract.TOKEN_URI()
-                return _tokenURI
+                const tx = await contract.claimNFT()
+                const receipt = await tx.wait(); // Wait for the transaction to be mined
+                const tokenId = receipt.events[0].args.tokenId.toString(); // Extract tokenId from the event logs
+                return tokenId
             }catch(error){
-                console.log(error)
+                console.log("Error in Claiming NFT on Blockchain",error)
             }
         }
     }
-    const choseCritter1 = async()=>{
-        setselectedCritter("0x5a8d131cdf5502b28D34FE504f846A2F14C52c40")
-        setselectedCritterName("Ignis Fox") 
-    }
-    const choseCritter2 = async()=>{
-        setselectedCritter("")
-        setselectedCritterName("Serplet") //ignisFox
-    }
-    const choseCritter3 = async()=>{
-        setselectedCritter("")
-        setselectedCritterName("Leafkin Behemoth") //ignisFox
+
+    async function setTokenIDD(){
+        const tokenNumber = await claimCritter()
+        setTokenId(tokenNumber)
     }
 
+    //marketplace : 0x39f42213fB52cCA75b1BAc92e75741818342b822
+    //claimNFTs : 0x04839f187cA780263b38dd87FeB44979877D8A4f
+
+    const choseCritter1 = async()=>{
+        setselectedCritterAddress("0x1f1CE383005c166E8077D24a201B059Aa7362e0B")
+        setselectedCritterName("Ignis Fox") 
+        setselectedCritterImage(`${critterOneData.image}`)
+    }
+    const choseCritter2 = async()=>{
+        setselectedCritterAddress("0xe8a03A1D96ee43bdFfeD157e8d128E3D3C1Da3e5")
+        setselectedCritterName("Serplet") 
+        setselectedCritterImage(`${critterTwoData.image}`)
+    }
+    const choseCritter3 = async()=>{
+        setselectedCritterAddress("0x6f41345Ae8602bb27Be89B472aAe3C9613beb633")
+        setselectedCritterName("Leafkin Behemoth") 
+        setselectedCritterImage(`${critterThreeData.image}`)
+    }
+
+    const handleSubmit = (e)=>{
+        e.preventDefault()
+        const nicknameValue = e.currentTarget.elements.nickname.value
+        setNickname(nicknameValue);
+    }
+
+    const formDataToJSON = (formData) => {
+        const object = {};
+        formData.forEach((value, key) => {
+            object[key] = value;
+        });
+        return object;
+    };
 
   return (
     <>
+    <h2>Thank you for Registering in Game</h2>
     <h3>CHOOSE YOUR PARTNER</h3>
     
         <button onClick={choseCritter1}>Critter 1</button>
@@ -141,8 +227,16 @@ const ClaimFirstCritter = () => {
         <Card imageUrl={critterThreeData.image} name={critterThreeData["name"]}/>
     
         <br></br>
-        <h4>Choosed Critter : {selectedCritterName}</h4>
-        <button onClick={handleUserProfile}>Confirm </button>
+
+        <form id="nicknameForm" onSubmit={handleSubmit}>
+            <label htmlFor="nickname"> Nickname for your Critter (optional): </label>
+            <input id="nickname" type='text' />
+            <button type='submit'>Done</button>
+        </form>
+        {selectedCritterAddress&&(<>
+            <h4>Choosed Critter : {selectedCritterName}</h4>
+            <button onClick={nftClaimTransaction}>Confirm :  </button>
+        </>)}
     </>
   )
 }

@@ -310,7 +310,13 @@ export const ABI = [
 	{
 		"inputs": [],
 		"name": "claimNFT",
-		"outputs": [],
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -550,7 +556,13 @@ export const ABI = [
 	{
 		"inputs": [],
 		"name": "purchaseNFT",
-		"outputs": [],
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"stateMutability": "payable",
 		"type": "function"
 	},

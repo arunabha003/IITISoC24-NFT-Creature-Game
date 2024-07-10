@@ -8,7 +8,7 @@ const critterSchema  = new mongoose.Schema(
         },
         tokenId : {
             required:true,
-            type:Number
+            type:String
         },
         nickname:{
             type:String,
@@ -16,6 +16,14 @@ const critterSchema  = new mongoose.Schema(
         master:{
             type:mongoose.Schema.Types.ObjectId,
             ref:"User",
+            required:true
+        },
+        tokenAddress:{
+            type:String,
+            required:true
+        },
+        critterImageUrl:{
+            type:String,
             required:true
         }
     }

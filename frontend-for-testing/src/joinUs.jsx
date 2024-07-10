@@ -2,6 +2,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { connectMetamask } from '../utils/connectMetamask'
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 
 function JoinUs() {
@@ -17,6 +18,14 @@ function JoinUs() {
   const [walletAddress, setwalletAddress] = useState("Null")
   const [walletConnectStatus,setwalletConnectStatus] = useState("Please Connect your Wallet")
 
+
+  useEffect(() => {
+    if(registerStatus=="Registered"){
+      handleClaimNFT()
+    }
+  }, [registerStatus])
+
+  
   async function useMetamask(){
     const {connectedWalletAddress,provider,signer} = await connectMetamask()
     setwalletAddress(connectedWalletAddress)
@@ -31,13 +40,6 @@ function JoinUs() {
       return null
     }
     
-    // const formData = {
-    //   username:`${e.target.username.value}`,
-    //   password:`${e.target.password.value}`,
-    //   displayName:`${e.target.displayName.value}`,
-    //   walletAddress:`${walletAddress}`,
-    //   avatar:`${e.target.avatar.files[0]}`
-    // }
 
     const formData = new FormData();
         formData.append('username', e.target.username.value);
@@ -81,14 +83,6 @@ function JoinUs() {
         <input type='text' id="displayName"></input>
         <button onSubmit={submitForm}>{registerStatus}</button>
         <br></br>
-
-      {registerStatus=="Registered" &&(
-        <>
-        <h3>Thank you for Registering in Game</h3>
-        <p>Claim your first Critter</p>
-        <button onClick={handleClaimNFT}>CLAIM</button>
-        </>
-      )}
        
         
       </form>

@@ -42,6 +42,8 @@ const UserProfile = () => {
       <img src={userData.avatar} alt="Avatar" />
           <p>Username: {userData.username}</p>
           <p>Wallet Address: {userData.walletAddress}</p>
+          <p>yahan your critters bhi add krna hoga yaa to seperate page is better just click bitch here</p>
+          <p>Battles lost : </p>
     </>)}
     <br></br>
     <button onClick={logout}>Logout</button>

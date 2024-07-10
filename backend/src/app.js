@@ -17,9 +17,12 @@ app.use(cookieParser())
 
 //Routes import
 import userRouter from './routes/user.routes.js'
-
+import critterRouter from './routes/critter.routes.js';
+import onSameWallet from './routes/verifyWalletAddress.routes.js';
 
 //Routes Declaration
 app.use("/api/v1/user",userRouter)
+app.use("/api/v1/critter",critterRouter)
+app.use("/api/v1/check",onSameWallet)
 
 export {app}

@@ -25,6 +25,18 @@ const userSchema = new Schema(
         refreshToken:{
             type:String,
             default: null
+        },
+        gotHisPartner:{
+            type:Boolean,
+            default:false
+        },
+        battlesWon:{
+            type:Number,
+            default:0
+        },
+        battlesLost:{
+            type:Number,
+            default:0
         }
     },
     {timestamps:true}
