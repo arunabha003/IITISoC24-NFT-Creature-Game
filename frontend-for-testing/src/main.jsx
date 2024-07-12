@@ -6,8 +6,8 @@ import JoinUs from './joinUs.jsx'
 import LoginPage from './loginPage.jsx'
 import ClaimFirstCritter from './claimFirstCritter.jsx'
 import UserProfile from './userProfile.jsx'
-import Homepage from './homepage.jsx'
 import YourCritters from './yourCritters.jsx'
+import BattlePage from './battle/battlePage.jsx'
 import {
   createBrowserRouter,
   RouterProvider,
@@ -35,12 +35,12 @@ const router = createBrowserRouter([
     element: <UserProfile/>
   },
   {
-    path:'/homepage',
-    element:<Homepage/>
-  },
-  {
     path:'/yourCritters',
     element:<YourCritters/>
+  },
+  {
+    path:'/battlePage',
+    element:<BattlePage/>
   },
   
 ]

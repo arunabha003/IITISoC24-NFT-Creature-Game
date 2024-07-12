@@ -98,6 +98,9 @@ const registerUser = asyncHandler(async(req,res)=>{
 })
 
 const login = asyncHandler(async(req,res)=>{
+    res.clearCookie('accessToken',options);
+    res.clearCookie('refreshToken',options);
+    
     const {password,walletAddress} = req.body
 
     const user = await User.findOne({walletAddress:walletAddress})

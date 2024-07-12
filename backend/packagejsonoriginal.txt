@@ -4,7 +4,7 @@
   "description": "Backend for IITISOC",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"nodemon -r dotenv/config --experimental-json-modules src/server.js\" \"nodemon -r dotenv/config --experimental-json-modules src/socketServer.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/server.js"
   },
   "author": "yash",
   "license": "ISC",

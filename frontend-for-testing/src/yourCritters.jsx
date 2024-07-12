@@ -1,5 +1,5 @@
 import { useEffect,useState} from 'react'
-import axios, { all } from 'axios'
+import axios from 'axios'
 import CritterCard from "../src/yourCritterCard.jsx"
 import {connectMetamask} from '../utils/connectMetamask.js'
 

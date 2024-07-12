@@ -8,12 +8,17 @@ function App() {
   const handleLogin = () => {
     navigate('/user/login');
   };
+  const onHandleBattleNowSubmit=()=>{
+    navigate("/battlePage")
+  }
   return (
     <>
-    Home pAge
+    Home Page
       <div className="nav-login">
           <button onClick={handleJoinUsClick}>JOIN US</button>
         </div>
+
+      < button onClick={onHandleBattleNowSubmit}>Battle Now</button>
 
         <div className="nav-login">
           <button onClick={handleLogin}>Already a user login</button>
