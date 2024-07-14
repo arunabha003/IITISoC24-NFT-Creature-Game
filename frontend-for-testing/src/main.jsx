@@ -48,12 +48,7 @@ const router = createBrowserRouter([
   {
     path:'/results',
     element:<Results/>
-  },
-  {
-    path:'/battleground/:roomId',
-    element:<Battleground/>
-  },
-  
+  }
 ]
 )
 
