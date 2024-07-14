@@ -16,11 +16,9 @@ let gameState = {};
 //if someone leaves match next one wins
 
 io.on('connection', (socket) => {
-    console.log("connected");
-
+    console.log("connected",socket.id);
     socket.on('fighterInfo', (data) => {
-        let playerHealth = { playerHealth: 100 };
-        playersInLobby.push({ ...data, socket, ...playerHealth });
+        playersInLobby.push({ ...data, socket });
         console.log("Player joined:", data.username);
 
         setTimeout(() => {
@@ -38,9 +36,17 @@ io.on('connection', (socket) => {
 
                 // Initialize game state
                 gameState[roomId] = {
-                    player1: { id: player1.socket.id, health: 100, level: player1.level, type: player1.type },
-                    player2: { id: player2.socket.id, health: 100, level: player2.level, type: player1.type}
+                    player1Health:100,
+                    player2Health:100,
+                    currentTurn:1,
+                    player1: { id: player1.socket.id, level: player1.level, type: player1.type},
+                    player2: { id: player2.socket.id, level: player2.level, type: player1.type}
                 };
+
+                //gets current turn
+                switchTurn(roomId) //initial turn send to each player 
+
+                io.to(roomId).emit('joinedRoom', "yeah u joined ");
 
                 player1.socket.emit('matchFound', {
                     roomId,
@@ -56,7 +62,8 @@ io.on('connection', (socket) => {
                         displayName: player2.displayName,
                         image: player2.avatar,
                         level: player2.level
-                    }
+                    },
+                    currentTurn : gameState[roomId].currentTurn
                 });
                 
                 player2.socket.emit('matchFound', {
@@ -73,8 +80,20 @@ io.on('connection', (socket) => {
                         displayName: player1.displayName,
                         image: player1.avatar,
                         level: player1.level
-                    }
+                    },
+                    currentTurn : gameState[roomId].currentTurn
                 });
+
+                console.log(gameState[roomId])
+                // console.log(gameState)
+
+                // setTimeout(() => {
+                //     if (gameState[roomId]) {
+                //         const winner = determineWinner(roomId);
+                //         io.to(roomId).emit('gameOver', { winner });
+                //         cleanupRoom(roomId);
+                //     }
+                // }, 120000);
                 
 
                 player1.socket.on('disconnect', () => {
@@ -87,86 +106,102 @@ io.on('connection', (socket) => {
                     playersInLobby = playersInLobby.filter(player => player !== player2);
                 });
 
+                
+
             } else {
                 socket.emit('notEnoughPlayers', { message: 'Not enough players in queue. Please wait for more players to join.' });
                 console.log('Not enough players in queue');
             }
-        }, 20000);
+        }, 10000);
     });
 
     socket.on('action', ({ roomId, player, action }) => {
-        if (rooms[roomId].currentTurn === player) {
-            // Handle player action based on 'action' parameter
+        if (gameState[roomId].currentTurn === player) {
             switch (action) {
                 case 'attack':
                     handleAttack(roomId, player);
                     break;
-                case 'defend':
-                    // Handle defend action if needed
+                // case 'defend':
+                //     //handle
+                //     break;
+                case 'none':
+                    //none
                     break;
-                default:
-                    // Handle other actions if any
-                    break;
-            }
-            // Emit updated game state to all players in the room
+            }  
             io.to(roomId).emit('updateHealth', {
-                player1Health: rooms[roomId].player1Health,
-                player2Health: rooms[roomId].player2Health
+                player1Health: gameState[roomId].player1Health,
+                player2Health: gameState[roomId].player2Health
             });
-            // Check game over condition
+
             if (checkGameOver(roomId)) {
                 const winner = determineWinner(roomId);
-                io.to(roomId).emit('gameOver', { winner });
-                // Optionally clean up game state after game over
+                io.to(roomId).emit('gameOver', {winner});
                 cleanupRoom(roomId);
             } else {
-                // Switch turn after processing action
                 switchTurn(roomId);
+                io.to(roomId).emit('whoseTurn',{
+                    turn : gameState[roomId].currentTurn
+                })
             }
         } else {
-            // Ignore the action if it's not the player's turn
-            // Optionally, emit an error event to notify the client
+            
         }
     });
+
+    
 
     socket.on('disconnect', () => {
         console.log(`Socket disconnected: ${socket.id}`);
-        // Clean up any game state or room management related to the disconnected socket
     });
 
-    // Function to handle attack action
     function handleAttack(roomId, player) {
-        // Example logic to reduce opponent's health
+    
         const opponent = player === 1 ? 2 : 1;
-        rooms[roomId][`player${opponent}Health`] -= 10; // Example: Reduce health by 10
+        gameState[roomId][`player${opponent}Health`] -= 10; 
+
+        // if (this.level <= 20) {
+        //     return 20 + (this.level - 1) * (20 / 19); // Gradually increase from 20 to 40
+        // } else if (this.level <= 40) {
+        //     return 60 + (this.level - 21) * (20 / 19); // Gradually increase from 60 to 80
+        // } else {
+        //     return 100 + (this.level - 41) * (20 / 9); // Gradually increase from 100 to 120
+        // }
+
+
     }
 
-    // Function to switch turn between players
+    
     function switchTurn(roomId) {
-        rooms[roomId].currentTurn = rooms[roomId].currentTurn === 1 ? 2 : 1;
-        // Emit event to update client about whose turn it is
-        io.to(roomId).emit('turnChange', { currentTurn: rooms[roomId].currentTurn });
+        if(gameState[roomId].player1.level>gameState[roomId].player2.level){
+            gameState[roomId].currentTurn = 1
+        }
+        else if(gameState[roomId].player1.level<gameState[roomId].player2.level){
+            gameState[roomId].currentTurn = 2
+        }
+        else{
+            gameState[roomId].currentTurn = 1
+        }
+        
+        // io.to(roomId).emit('turnChange', { currentTurn: gameState[roomId].currentTurn });
     }
 
-    // Example function to check game over condition
+   
     function checkGameOver(roomId) {
-        return rooms[roomId].player1Health <= 0 || rooms[roomId].player2Health <= 0;
+        return gameState[roomId].player1Health <= 0 || gameState[roomId].player2Health <= 0;
     }
 
-    // Example function to determine the winner
     function determineWinner(roomId) {
-        if (rooms[roomId].player1Health <= 0 && rooms[roomId].player2Health <= 0) {
+        if (gameState[roomId].player1Health <= 0 && gameState[roomId].player2Health <= 0) {
             return 'Draw';
-        } else if (rooms[roomId].player1Health <= 0) {
-            return 2; // Player 2 wins
+        } else if (gameState[roomId].player1Health <= 0) {
+            return 2;
         } else {
-            return 1; // Player 1 wins
+            return 1; 
         }
     }
 
-    // Example function to clean up room state after game over
     function cleanupRoom(roomId) {
-        delete rooms[roomId]; // Remove the room from rooms object
+        delete gameState[roomId];
     }
     
 });

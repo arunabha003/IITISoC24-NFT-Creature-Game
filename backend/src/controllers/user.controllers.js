@@ -35,6 +35,7 @@ const generateAccessAndRefreshTokens = async(userId)=>{
 }
 
 const registerUser = asyncHandler(async(req,res)=>{
+    
     const {username,password,displayName,walletAddress,avatar} = req.body
 
     if(!((username?.trim())||(password?.trim())||(walletAddress?.trim()))){
@@ -88,6 +89,12 @@ const registerUser = asyncHandler(async(req,res)=>{
 
     const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(user._id)
 
+    //clearing any existing cookies 
+    res.clearCookie('accessToken', options);
+    res.clearCookie('refreshToken', options);
+
+
+    //Setting cookies in response
     res
     .cookie("accessToken",accessToken,options)
     .cookie("refreshToken",refreshToken,options)
@@ -119,6 +126,10 @@ const login = asyncHandler(async(req,res)=>{
     const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(user._id)
 
     console.log("userloggedIn")
+
+    //clearing any existing cookies 
+    res.clearCookie('accessToken', options); //changes
+    res.clearCookie('refreshToken', options); //changes
     
     res
     .cookie("accessToken",accessToken,options)

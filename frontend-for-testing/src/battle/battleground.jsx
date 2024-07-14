@@ -1,120 +1,110 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 
-
-
 const Battleground = () => {
-    const { roomId } = useParams(); // Extract the roomId from the URL
-    const navigate = useNavigate();
-    const [player1Health, setPlayer1Health] = useState(100);
-    const [player2Health, setPlayer2Health] = useState(100);
-    const [player, setPlayer] = useState(null); // Track whether this client is Player 1 or Player 2
-    const [opponent, setOpponent] = useState({});
-    const socket = io("http://localhost:5001");
-    const [clientDetails, setClientDetails] = useState({});
-    const [currentTurn, setCurrentTurn] = useState(null); // Track whose turn it is
-    const [turnTimeout, setTurnTimeout] = useState(null); // Timeout for turn
+  const { roomId } = useParams();
+  const navigate = useNavigate();
+  const [player1Health, setPlayer1Health] = useState(100);
+  const [player2Health, setPlayer2Health] = useState(100);
+  const [player, setPlayer] = useState(null);
+  const [opponent, setOpponent] = useState({});
+  const [DATA, setDATA] = useState(null);
+  const [socket, setSocket] = useState(null);
 
-    useEffect(() => {
+  useEffect(() => {
+    const newSocket = io("http://localhost:5001", {
+      withCredentials: true,
+    });
+    setSocket(newSocket);
 
-        socket.on('matchFound', ({ player, clientDetails, opponent }) => {
-            setPlayer(player); //1 or 2 ??
-            setClientDetails(clientDetails)
-            setOpponent(opponent);
-            if(player==1){
-                setCurrentTurn("mine")
-                startTurnTimer()
-            }else {
-                setCurrentTurn("opponent"); // Set current turn to indicate it's opponent's turn
-                startTurnTimer()
-            }
-        });
+    newSocket.emit('joinRoom', { roomId });
 
-        socket.on('updateHealth', ({ player1Health, player2Health }) => {
-            setPlayer1Health(player1Health);
-            setPlayer2Health(player2Health);
-        });
+    newSocket.on("joinedRoom", (data) => {
+      console.log("data:", data);
+      setDATA(data);
+    });
 
-        socket.on('gameOver', ({ winner }) => {
-            alert(`Game Over! Player ${winner} wins!`);
-            clearTimeout(turnTimeout);
-            navigate('/'); // Redirect to home page after game over
-        });
-
-        // Cleanup on unmount
-        return () => {
-            socket.disconnect();
-            clearTimeout(turnTimeout);
-        };
-    }, [roomId, navigate, socket]);
-
-    const handleAction = (action) => {
-        // Emit action to the server
-        socket.emit('action', { roomId, player, action });
-    };
-
-    const switchTurn = () => {
-        if(currentTurn=="mine"){
-            setCurrentTurn("opponent")
-        }
-        else{
-            setCurrentTurn("mine")
-        }
+    newSocket.on('matchFound', ({ player, clientDetails, opponent, currentTurn }) => {
+      setPlayer(player);
+      setClientDetails(clientDetails);
+      setOpponent(opponent);
+      if (player === currentTurn) {
+        setCurrentTurn("mine");
         startTurnTimer();
+      } else {
+        setCurrentTurn("opponent");
+        startTurnTimer();
+      }
+    });
+
+    newSocket.on('updateHealth', ({ player1Health, player2Health }) => {
+      setPlayer1Health(player1Health);
+      setPlayer2Health(player2Health);
+    });
+
+    newSocket.on('whoseTurn', ({ turn }) => {
+      if (player === turn) {
+        setCurrentTurn("mine");
+      } else {
+        setCurrentTurn("opponent");
+      }
+    });
+
+    newSocket.on('gameOver', ({ winner }) => {
+      clearTimeout(turnTimeout);
+      navigate('/results', { state: { results: { result: winner === player ? 'won' : 'lost', reward: null } } });
+    });
+
+    return () => {
+      newSocket.disconnect();
+      clearTimeout(turnTimeout);
     };
+  }, [roomId, navigate]);
 
-    // Function to start turn timer
-    const startTurnTimer = () => {
-        setTurnTimeout(setTimeout(() => {
-            switchTurn(); // Automatically switch turn after timeout
-        }, 7000)); // 7 seconds timeout
-    }
+  const handleAction = (action) => {
+    socket.emit('action', { roomId, player, action });
+  };
 
-    return (
-        <>
+  const startTurnTimer = () => {
+    setTurnTimeout(setTimeout(() => {
+      socket.emit('action', { roomId, player, action: 'none' });
+    }, 10000));
+  };
+
+  return (
+    <>
+      <div>
+        <h1>{DATA}</h1>
+        <h1>Battleground</h1>
+        <div id='opponent'>
+          <h2>Opponent: {opponent.username}</h2>
+          <img src={opponent.image} alt="Opponent" />
+          <div>
+            <h2>Your Opponent's Health:</h2>
+            <p>{player === 1 ? player2Health : player1Health}</p>
+          </div>
+        </div>
+
+        <div id='us'>
+          <h2>Your Info</h2>
+          <img src={clientDetails.image} alt="Opponent" />
+          <div>
+            <h2>Your Health:</h2>
+            <p>{player === 1 ? player1Health : player2Health}</p>
+          </div>
+
+          {currentTurn === "mine" ? (
             <div>
-                <h1>Battleground</h1>
-                <div>
-                    <h2>Opponent: {opponent.username}</h2>
-                    <img src={opponent.image} alt="Opponent" />
-                    {player !== 1 && (
-                    <div>
-                        <h2>You</h2>
-                        <p>Health: {player2Health}</p>
-                    </div>
-                    )}
-                    {player !== 2 && (
-                    <div>
-                        <h2>You</h2>
-                        <p>Health: {player2Health}</p>
-                    </div>
-                    )}
-                    <br></br>
-                </div>
-                {player === 1 && (
-                    <div>
-                        <h2>You</h2>
-                        <p>Health: {player1Health}</p>
-                    </div>
-                )}
-                {player === 2 && (
-                    <div>
-                        <h2>You</h2>
-                        <p>Health: {player2Health}</p>
-                    </div>
-                )}
-                {currentTurn === "mine" ? (
-                    <div>
-                        <button onClick={() => handleAction('attack')}>Attack</button>
-                        <button onClick={() => handleAction('defend')}>Defend</button>
-                    </div>
-                ) : (
-                    <p>Waiting for opponent's move...</p>
-                )}
+              <button onClick={() => handleAction('attack')}>Attack</button>
             </div>
-        </>
-    );
-}
+          ) : (
+            <p>Waiting for opponent's move... 10 seconds</p>
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default Battleground;
