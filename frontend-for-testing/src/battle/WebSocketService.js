@@ -1,21 +1,24 @@
-import { useEffect, useState } from 'react';
-import io from 'socket.io-client';
+// WebSocketService.js
 
-const useWebSocket = () => {
-  const url = "http://localhost:5001";
-  const options = { withCredentials: true };
-  const [socket, setSocket] = useState(null);
+import { io } from 'socket.io-client';
 
-  useEffect(() => {
-    const newSocket = io(url, options);
-    setSocket(newSocket);
+const SOCKET_SERVER_URL = 'http://localhost:5001'; // Replace with your server URL
 
-    return () => {
-      newSocket.disconnect();
-    };
-  }, [url, options]);
+let socket = null;
 
+export const initSocket = () => {
+  if (!socket) {
+    socket = io(SOCKET_SERVER_URL, {
+      withCredentials: true, // Optional, if you need to send cookies
+    });
+    console.log("socket",socket)
+  }
   return socket;
 };
 
-export default useWebSocket;
+export const getSocket = () => {
+  if (!socket) {
+    throw new Error('Socket is not initialized');
+  }
+  return socket;
+};

@@ -1,26 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import CritterCard from "../yourCritterCard.jsx";
 import { connectMetamask } from '../../utils/connectMetamask.js';
-import io from 'socket.io-client';
 import { ethers } from 'ethers';
 import { ABI } from '../crittersABI.js';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { initSocket, getSocket } from '../battle/WebSocketService.js'; // Import getSocket
 
 const BattlePage = () => {
   const navigate = useNavigate();
 
-  const [socket, setSocket] = useState(null); // State for socket connection
+  const [socket, setSocket] = useState(null);
 
-  // Initialize socket connection
   useEffect(() => {
-    const newSocket = io("http://localhost:5001", {
-      withCredentials: true,
-    });
-    setSocket(newSocket);
+    const socketInstance = initSocket();
+    setSocket(socketInstance);
 
     return () => {
-      newSocket.disconnect();
+      socketInstance.disconnect();
     };
   }, []);
 
@@ -36,6 +33,14 @@ const BattlePage = () => {
   const [selectedCritterLevel, setSelectedCritterLevel] = useState(null);
   const [critterAddress, setCritterAddress] = useState(null);
   const [selectedCritterData, setSelectedCritterData] = useState(null);
+
+
+  const [clientDetails, setClientDetails] = useState(null);
+  const [opponent, setOpponent] = useState({});
+  const [player1Health, setPlayer1Health] = useState(100);
+  const [player2Health, setPlayer2Health] = useState(100);
+  const [player, setPlayer] = useState(100);
+  const [roomId, setRoomId] = useState(null); // Change to null initially
 
   axios.defaults.withCredentials = true;
 
@@ -110,6 +115,7 @@ const BattlePage = () => {
     if (selectedCritterLevel) {
       setFighterInfo({ ...selectedCritterData, ...userData, level: selectedCritterLevel });
       setSendFighterInfoStatus("sending");
+      console.log({ ...selectedCritterData, ...userData, level: selectedCritterLevel })
     }
   }, [selectedCritterLevel]);
 
@@ -124,7 +130,7 @@ const BattlePage = () => {
     if (fighterInfo) {
       setStartMatch("Matchmaking...");
       socket.once('matchFound', ({ roomId }) => {
-        navigate(`/battleground/${roomId}`);
+        setRoomId(roomId); // Set roomId when match is found
       });
       setSendFighterInfoStatus(null);
     } else {
@@ -139,12 +145,38 @@ const BattlePage = () => {
     }
   }, [sendFighterInfoStatus, fighterInfo, socket]);
 
+  // Listen for updates from socket
+  useEffect(() => {
+    if (socket) {
+      socket.on('matchFound', ({ player, clientDetails, opponent }) => {
+        setPlayer(player)
+        setClientDetails(clientDetails);
+        setOpponent(opponent);
+      });
+
+      socket.on('updateHealth', ({ player1Health, player2Health }) => {
+        setPlayer1Health(player1Health);
+        setPlayer2Health(player2Health);
+      });
+
+      socket.on('gameOver', ({ winner }) => {
+        navigate('/results', { state: { results: { result: winner === player ? 'won' : 'lost', reward: null } } });
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [socket]);
+
   return (
     <>
       Battle Now!
       <br />
       <div>
-        <h1>Your Critters !</h1>
+        <h3>Your Critters !</h3>
         {allCritterData && (
           <>
             {allCritterData.map(critter => (
@@ -157,6 +189,33 @@ const BattlePage = () => {
         )}
         <button onClick={matchmaking}>{startMatch}</button>
       </div>
+
+      {/* Battle Interface */}
+      {clientDetails && opponent && (
+        <div>
+          <h2>FIGHT!! Room ID : {roomId}</h2>
+          <div>
+            <div id='us'>
+              <h3>Your Info</h3>
+              <CritterCard critter={clientDetails} />
+              <img src={clientDetails.critterImageUrl} alt="Your Critter" />
+              <div>
+                <h3>Your Health:</h3>
+                <p>{player === 1 ? player1Health : player2Health}</p>
+              </div>
+            </div>
+            <div id='opponent'>
+            <CritterCard critter={opponent} />
+              <h3>Opponent: {opponent.username}</h3>
+              <img src={opponent.critterImageUrl} alt="Opponent's Critter" />
+              <div>
+                <h3>Opponent's Health:</h3>
+                <p>{player === 1 ? player2Health : player1Health}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
