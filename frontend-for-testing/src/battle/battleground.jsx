@@ -11,6 +11,10 @@ const Battleground = () => {
   const [opponent, setOpponent] = useState({});
   const [DATA, setDATA] = useState(null);
   const [socket, setSocket] = useState(null);
+  const [clientDetails, setClientDetails] = useState(null);
+  const [currentTurn, setCurrentTurn] = useState(null);
+
+
 
   useEffect(() => {
     const newSocket = io("http://localhost:5001", {
