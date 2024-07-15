@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 import { ABI } from '../crittersABI.js';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { initSocket, getSocket } from '../battle/WebSocketService.js'; // Import getSocket
+import { initSocket } from '../battle/WebSocketService.js'; 
 
 const BattlePage = () => {
   const navigate = useNavigate();
@@ -34,14 +34,14 @@ const BattlePage = () => {
   const [critterAddress, setCritterAddress] = useState(null);
   const [selectedCritterData, setSelectedCritterData] = useState(null);
 
-
   const [clientDetails, setClientDetails] = useState(null);
   const [opponent, setOpponent] = useState({});
-  const [player1Health, setPlayer1Health] = useState(100);
-  const [player2Health, setPlayer2Health] = useState(100);
-  const [player, setPlayer] = useState(100);
+  const [clientHeath, setclientHeath] = useState(100);
+  const [opponentHealth, setopponentHealth] = useState(100);
   const [roomId, setRoomId] = useState(null); // Change to null initially
-
+  const [matchmakingPage, setMatchmakingPage] = useState(true);
+  const [currentTurn, setCurrentTurn] = useState(null); // Use null to indicate waiting state
+  
   axios.defaults.withCredentials = true;
 
   // Function to connect Metamask
@@ -115,7 +115,6 @@ const BattlePage = () => {
     if (selectedCritterLevel) {
       setFighterInfo({ ...selectedCritterData, ...userData, level: selectedCritterLevel });
       setSendFighterInfoStatus("sending");
-      console.log({ ...selectedCritterData, ...userData, level: selectedCritterLevel })
     }
   }, [selectedCritterLevel]);
 
@@ -129,8 +128,14 @@ const BattlePage = () => {
   const matchmaking = (e) => {
     if (fighterInfo) {
       setStartMatch("Matchmaking...");
-      socket.once('matchFound', ({ roomId }) => {
-        setRoomId(roomId); // Set roomId when match is found
+      socket.once('matchFound', ({ roomId, player, clientDetails, opponent, currentTurn }) => {
+        setClientDetails(clientDetails);
+        setRoomId(roomId);
+        setOpponent(opponent);
+        setMatchmakingPage(false);
+        setclientHeath(clientDetails.health)
+        setopponentHealth(opponent.health)
+        setCurrentTurn(currentTurn); // Set the initial turn
       });
       setSendFighterInfoStatus(null);
     } else {
@@ -148,19 +153,17 @@ const BattlePage = () => {
   // Listen for updates from socket
   useEffect(() => {
     if (socket) {
-      socket.on('matchFound', ({ player, clientDetails, opponent }) => {
-        setPlayer(player)
-        setClientDetails(clientDetails);
-        setOpponent(opponent);
-      });
-
-      socket.on('updateHealth', ({ player1Health, player2Health }) => {
-        setPlayer1Health(player1Health);
-        setPlayer2Health(player2Health);
+      socket.on('updateHealth', ({ clientHealth, opponentHealth }) => {
+        setclientHeath(clientHealth);
+        setopponentHealth(opponentHealth);
       });
 
       socket.on('gameOver', ({ winner }) => {
-        navigate('/results', { state: { results: { result: winner === player ? 'won' : 'lost', reward: null } } });
+        navigate('/results', { state: { results: { result: winner === client ? 'won' : 'lost', reward: null } } });
+      });
+
+      socket.on('whoseTurn', ({ turn }) => {
+        setCurrentTurn(turn === socket.id ? "mine" : "opponent");
       });
     }
 
@@ -171,46 +174,61 @@ const BattlePage = () => {
     };
   }, [socket]);
 
+  const handleAttack = () => {
+    console.log({ roomId, action: 'attack' })
+    socket.emit('action', { roomId, action: 'attack' });
+  };
+
+  const handleDefend = () => {
+    socket.emit('action', { roomId, action: 'defend' });
+  };
+
   return (
     <>
-      Battle Now!
-      <br />
-      <div>
-        <h3>Your Critters !</h3>
-        {allCritterData && (
-          <>
-            {allCritterData.map(critter => (
-              <div key={critter._id}>
-                <CritterCard critter={critter} />
-                <button onClick={() => handleSubmit(critter)}>Select</button>
-              </div>
-            ))}
-          </>
-        )}
-        <button onClick={matchmaking}>{startMatch}</button>
-      </div>
+      {matchmakingPage && (
+        <>
+          Battle Now!
+          <br />
+          <div>
+            <h3>Your Critters !</h3>
+            {allCritterData && (
+              <>
+                {allCritterData.map(critter => (
+                  <div key={critter._id}>
+                    <CritterCard critter={critter} />
+                    <button onClick={() => handleSubmit(critter)}>Select</button>
+                  </div>
+                ))}
+              </>
+            )}
+            <button onClick={matchmaking}>{startMatch}</button>
+          </div>
+        </>
+      )}
 
       {/* Battle Interface */}
-      {clientDetails && opponent && (
+      {clientDetails && opponent && roomId && (
         <div>
           <h2>FIGHT!! Room ID : {roomId}</h2>
           <div>
+            <div id='opponent'>
+              <CritterCard critter={opponent} />
+              <h3>Opponent: {opponent.username}</h3>
+              <div>
+                <h3>Opponent's Health:{opponentHealth}</h3>
+              </div>
+            </div>
             <div id='us'>
               <h3>Your Info</h3>
               <CritterCard critter={clientDetails} />
-              <img src={clientDetails.critterImageUrl} alt="Your Critter" />
               <div>
-                <h3>Your Health:</h3>
-                <p>{player === 1 ? player1Health : player2Health}</p>
-              </div>
-            </div>
-            <div id='opponent'>
-            <CritterCard critter={opponent} />
-              <h3>Opponent: {opponent.username}</h3>
-              <img src={opponent.critterImageUrl} alt="Opponent's Critter" />
-              <div>
-                <h3>Opponent's Health:</h3>
-                <p>{player === 1 ? player2Health : player1Health}</p>
+                <h3>Your Health: {clientHeath}</h3>
+                {currentTurn === 'mine' && (
+                  <div>
+                    <button onClick={handleAttack}>Attack</button>
+                    <button onClick={handleDefend}>Defend</button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

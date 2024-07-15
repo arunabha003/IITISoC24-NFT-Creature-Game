@@ -9,7 +9,6 @@ import UserProfile from './userProfile.jsx'
 import YourCritters from './yourCritters.jsx'
 import BattlePage from './battle/battlePage.jsx'
 import Results from './battle/results.jsx'
-import Battleground from './battle/battleground.jsx'
 
 import {
   createBrowserRouter,
