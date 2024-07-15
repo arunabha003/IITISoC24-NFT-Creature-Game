@@ -33,8 +33,11 @@ io.on('connection', (socket) => {
                 // Initialize game state for the room
                 gameState[roomId] = {
                     currentTurn: player1.socket.id,
+                    player1instance : player1,
+                    player2instance : player2,
                     player1: { id: player1.socket.id, level: player1.level, type: player1.type,health:100 },
-                    player2: { id: player2.socket.id, level: player2.level, type: player2.type,health:100 }
+                    player2: { id: player2.socket.id, level: player2.level, type: player2.type,health:100 },
+                    
                 };
 
                 // Emit 'matchFound' event to both players with initial game details
@@ -128,12 +131,23 @@ io.on('connection', (socket) => {
 
     function handleAction(roomId, playerId, action) {
         let player, opponent;
+        let playersocket, opponentsocket;
         if (gameState[roomId].player1.id === playerId) {
+
             player = gameState[roomId].player1;
+            playersocket = gameState[roomId].player1instance.socket;
+
             opponent = gameState[roomId].player2;
+            opponentsocket = gameState[roomId].player2instance.socket;
+
         } else if (gameState[roomId].player2.id === playerId) {
+
             player = gameState[roomId].player2;
+            playersocket = gameState[roomId].player2instance.socket;
+
             opponent = gameState[roomId].player1;
+            opponentsocket = gameState[roomId].player1instance.socket;
+
         } else {
             return;
         }
@@ -152,10 +166,8 @@ io.on('connection', (socket) => {
             }
 
             // Emit updated health to clients
-            io.to(roomId).emit('updateHealth', {
-                clientHealth: player.health,
-                opponentHealth: opponent.health
-            });
+            playersocket.emit('updateHealth', { health: gameState[roomId].player1.health ,opponentHealth:gameState[roomId].player2.health });
+            opponentsocket.emit('updateHealth', { health: gameState[roomId].player2.health ,opponentHealth:gameState[roomId].player1.health });
 
             // Check if game over
             if (checkGameOver(roomId)) {
@@ -171,6 +183,7 @@ io.on('connection', (socket) => {
 
     function handleAttack(roomId, player, opponent) {
         opponent.health -= 10; // Example: Decrease health by 10 on attack
+        
     }
 
     function switchTurn(roomId) {

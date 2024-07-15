@@ -133,7 +133,7 @@ const BattlePage = () => {
         setRoomId(roomId);
         setOpponent(opponent);
         setMatchmakingPage(false);
-        setclientHeath(clientDetails.health)
+        // setclientHeath(clientDetails.health)
         setopponentHealth(opponent.health)
         setCurrentTurn(currentTurn); // Set the initial turn
       });
@@ -153,8 +153,8 @@ const BattlePage = () => {
   // Listen for updates from socket
   useEffect(() => {
     if (socket) {
-      socket.on('updateHealth', ({ clientHealth, opponentHealth }) => {
-        setclientHeath(clientHealth);
+      socket.on('updateHealth', ({ health, opponentHealth }) => {
+        setclientHeath(health);
         setopponentHealth(opponentHealth);
       });
 
