@@ -200,11 +200,43 @@ const userProfile = asyncHandler(async(req,res)=>{
     }
 })
 
+const addEXP = asyncHandler(async(req,res)=>{
+
+    const {EXP} = req.body
+
+    if (!EXP || isNaN(EXP)) {
+        throw new ApiError(400, 'Invalid EXP points');
+    }
+
+    console.log(EXP)
+
+    const user = req.user._id
+
+    const player = await User.findById(user)
+
+    if (!player) {
+        throw new ApiError(404, 'User not found');
+    }
+
+    player.EXP = player.EXP + EXP
+
+    await player.save()
+
+    console.log("new exp added : ",player.username,player.EXP)
+    
+    res
+    .status(201)
+    .json(
+         new ApiResponse(201,"Added EXP points to player")
+    )
+})
+
 export {
     registerUser,
     login,
     logout,
     getCrittersHeHave,
-    userProfile
+    userProfile,
+    addEXP
 }
 

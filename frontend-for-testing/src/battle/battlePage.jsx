@@ -36,8 +36,8 @@ const BattlePage = () => {
 
   const [clientDetails, setClientDetails] = useState(null);
   const [opponent, setOpponent] = useState({});
-  const [clientHeath, setclientHeath] = useState(100);
-  const [opponentHealth, setopponentHealth] = useState(100);
+  const [clientHeath, setclientHeath] = useState(200);
+  const [opponentHealth, setopponentHealth] = useState(200);
   const [roomId, setRoomId] = useState(null); // Change to null initially
   const [matchmakingPage, setMatchmakingPage] = useState(true);
   const [currentTurn, setCurrentTurn] = useState(null); // Use null to indicate waiting state
@@ -158,10 +158,23 @@ const BattlePage = () => {
         setopponentHealth(opponentHealth);
       });
 
-      socket.on('gameOver', ({ winner }) => {
-        navigate('/results', { state: { results: { result: winner === client ? 'won' : 'lost', reward: null } } });
+      socket.on('gameOver', ({ status,reward,winnerUsername,loserUsername }) => {
+        if(status=='won'){
+          navigate('/results', { state: { 
+            status : 'won',
+            EXP : reward,
+            winnerUsername,
+            loserUsername
+          } });
+        }
+        else if(status=='lost'){
+          navigate('/results', { state: { 
+            status : 'lost',
+            EXP : reward
+          } });
+        }
+        
       });
-
       socket.on('whoseTurn', ({ turn }) => {
         setCurrentTurn(turn === socket.id ? "mine" : "opponent");
       });

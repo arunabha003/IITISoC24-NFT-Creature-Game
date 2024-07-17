@@ -19,10 +19,12 @@ app.use(cookieParser())
 import userRouter from './routes/user.routes.js'
 import critterRouter from './routes/critter.routes.js';
 import onSameWallet from './routes/verifyWalletAddress.routes.js';
+import battleRecordRouter from './routes/battleRecords.routes.js';
 
 //Routes Declaration
 app.use("/api/v1/user",userRouter)
 app.use("/api/v1/critter",critterRouter)
 app.use("/api/v1/check",onSameWallet)
+app.use("/api/v1/battleRecords",battleRecordRouter)
 
 export {app}

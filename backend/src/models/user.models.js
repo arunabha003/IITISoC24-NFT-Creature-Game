@@ -37,6 +37,10 @@ const userSchema = new Schema(
         battlesLost:{
             type:Number,
             default:0
+        },
+        EXP:{
+            type:Number,
+            default:0
         }
     },
     {timestamps:true}
