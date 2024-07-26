@@ -5,21 +5,13 @@ import { ethers } from 'ethers';
 import { ABI } from '../crittersABI.js';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { initSocket } from '../battle/WebSocketService.js'; 
+import { initSocket } from '../battle/WebSocketService.js';
 
 const BattlePage = () => {
   const navigate = useNavigate();
 
   const [socket, setSocket] = useState(null);
-
-  useEffect(() => {
-    const socketInstance = initSocket();
-    setSocket(socketInstance);
-
-    return () => {
-      socketInstance.disconnect();
-    };
-  }, []);
+  const [loggedIn, setLoggedIn] = useState(false); // Track login status
 
   // Other state variables
   const [sendFighterInfoStatus, setSendFighterInfoStatus] = useState(null);
@@ -41,7 +33,7 @@ const BattlePage = () => {
   const [roomId, setRoomId] = useState(null); // Change to null initially
   const [matchmakingPage, setMatchmakingPage] = useState(true);
   const [currentTurn, setCurrentTurn] = useState(null); // Use null to indicate waiting state
-  
+
   axios.defaults.withCredentials = true;
 
   // Function to connect Metamask
@@ -82,6 +74,7 @@ const BattlePage = () => {
   async function fetchUserProfile() {
     const response = await axios.get("http://localhost:5000/api/v1/user/profile", { withCredentials: true });
     setUserData(response.data);
+    setLoggedIn(true); // Mark as logged in
   }
 
   // Function to fetch all critters
@@ -158,23 +151,26 @@ const BattlePage = () => {
         setopponentHealth(opponentHealth);
       });
 
-      socket.on('gameOver', ({ status,reward,winnerUsername,loserUsername }) => {
-        if(status=='won'){
-          navigate('/results', { state: { 
-            status : 'won',
-            EXP : reward,
-            winnerUsername,
-            loserUsername
-          } });
+      socket.on('gameOver', ({ status, reward, winnerUsername, loserUsername }) => {
+        if (status === 'won') {
+          navigate('/results', {
+            state: {
+              status: 'won',
+              EXP: reward,
+              winnerUsername,
+              loserUsername
+            }
+          });
+        } else if (status === 'lost') {
+          navigate('/results', {
+            state: {
+              status: 'lost',
+              EXP: reward
+            }
+          });
         }
-        else if(status=='lost'){
-          navigate('/results', { state: { 
-            status : 'lost',
-            EXP : reward
-          } });
-        }
-        
       });
+
       socket.on('whoseTurn', ({ turn }) => {
         setCurrentTurn(turn === socket.id ? "mine" : "opponent");
       });
@@ -195,6 +191,10 @@ const BattlePage = () => {
   const handleDefend = () => {
     socket.emit('action', { roomId, action: 'defend' });
   };
+
+  if (!loggedIn) {
+    return <div>Login To Play!</div>; // Or redirect to login page
+  }
 
   return (
     <>

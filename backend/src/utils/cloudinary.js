@@ -15,11 +15,11 @@ export const uploadOnCloudinary = async function (filePath){
        .upload(
            filePath, {
             resource_type: "image",
-            quality: "auto:good", // Adjusts quality to balance file size
-            width: 800, // Adjust as needed
-            height: 800, // Adjust as needed
-            crop: "limit", // Crops image to fit the given dimensions
-            aspect_ratio: "1:1", // Ensures image is square if needed
+            quality: "auto:good", 
+            width: 800, 
+            height: 800, 
+            crop: "limit", 
+            aspect_ratio: "1:1", 
             eager: [
                 { width: 800, height: 800, crop: "limit", quality: "auto:good" }
             ]
