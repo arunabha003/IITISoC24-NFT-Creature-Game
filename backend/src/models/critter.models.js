@@ -25,6 +25,10 @@ const critterSchema  = new mongoose.Schema(
         critterImageUrl:{
             type:String,
             required:true
+        },
+        forSale : {
+            type: Boolean,
+            default:false
         }
     }
 )

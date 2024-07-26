@@ -77,7 +77,7 @@ const Results = () => {
         <>
           <h1>VICTORY</h1>
           <br />
-          <p>Rewards: {EXP} exp</p>
+          <p>Trophies: +{EXP} exp</p>
           <button onClick={handle}>Go Home</button>
         </>
       )}
@@ -86,7 +86,7 @@ const Results = () => {
           <h1>Defeat</h1>
           <p>Better luck next time...</p>
           <br />
-          <p>Rewards: {EXP} exp</p>
+          <p>Trophies: +{EXP} </p>
           <button onClick={handle}>Go Home</button>
         </>
       )}

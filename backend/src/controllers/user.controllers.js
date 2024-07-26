@@ -231,12 +231,27 @@ const addEXP = asyncHandler(async(req,res)=>{
     )
 })
 
+const leaderboard = asyncHandler(async(req,res)=>{
+    try {
+        const topPlayers = await User.find().sort({ EXP: -1 }).limit(40).select('-password -refreshToken -walletAddress -gotHisPartner -battlesLost -battlesWon -createdAt -updatedAt -__v');;
+        console.log(topPlayers)
+        res
+        .status(201)
+        .json(
+            topPlayers
+        )
+    } catch (error) {
+        console.log("cant fetch leaderboard data",error)
+    }
+})
+
 export {
     registerUser,
     login,
     logout,
     getCrittersHeHave,
     userProfile,
-    addEXP
+    addEXP,
+    leaderboard
 }
 

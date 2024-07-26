@@ -55,6 +55,7 @@ const YourCritters = () => {
           <CritterCard key={critter._id} critter={critter} />
           ))}
         </>)}
+
     </>
   )
 }

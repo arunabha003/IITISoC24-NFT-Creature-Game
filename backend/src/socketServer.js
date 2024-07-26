@@ -186,7 +186,7 @@ io.on('connection', (socket) => {
             if (checkGameOver(roomId,player,opponent)) {
                 // const winner = determineWinner(roomId,player,opponent);
                 const winnerXP = 50 + (opponent.level*10) 
-                const defeatedXP = 50 * 0.5
+                const defeatedXP = 50 * 0.1
                 try {
                   playersocket.emit('gameOver',{status : "won",reward:winnerXP, winnerUsername : player.username, loserUsername: opponent.username})
                   opponentsocket.emit('gameOver',{status : "lost",reward:defeatedXP})
@@ -213,12 +213,9 @@ io.on('connection', (socket) => {
         calculateOpponentHeath(player, opponent) 
     }
 
-    
-
     function calculateOpponentHeath(player, opponent) {
         if (getOpponentDefense(opponent,player) >= getPlayerAttack(player,opponent)) {
-          opponent.health = opponent.health - Math.ceil(0.1 * getPlayerAttack(player,opponent));
-          return
+          opponent.health = opponent.health - Math.ceil(0.2 * getPlayerAttack(player,opponent));
         }
         opponent.health = opponent.health - getPlayerAttack(player,opponent) + getOpponentDefense(opponent,player)
     }
@@ -242,7 +239,7 @@ io.on('connection', (socket) => {
 
       function getPlayerAttack(player,opponent) {
         return Math.ceil(
-          player.attack * (0.8 + Math.random() * 0.4) * attackAdvantageOfPlayer(player,opponent)
+          player.attack * (0.8 + (Math.random() * 0.4)) * attackAdvantageOfPlayer(player,opponent)
         ); // Random value between 0.8 and 1.2 times attack
       }
     
@@ -295,13 +292,13 @@ io.on('connection', (socket) => {
       }
     }
 
-    function determineWinner(roomId,player,opponent) {
-      if(player.health<=0){
-        return "opponent"
-      }else if(opponent.health<=0){
-        return "player"
-      }
-    }
+    // function determineWinner(roomId,player,opponent) {
+    //   if(player.health<=0){
+    //     return "opponent"
+    //   }else if(opponent.health<=0){
+    //     return "player"
+    //   }
+    // }
 
     function incrementDefenseCount(roomId,numberNOD) {
       if (gameState[roomId][`player${numberNOD}`].NOD < 5) {

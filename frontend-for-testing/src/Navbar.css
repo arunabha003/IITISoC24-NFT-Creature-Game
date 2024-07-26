@@ -1,0 +1,51 @@
+/* Navbar Styles */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #162447;
+  color: #eaeaea;
+}
+
+.nav-profile {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  object-fit: cover;
+}
+
+/* Navbar Button Styles */
+.navbar {
+  display: flex;
+  align-items: center;
+}
+
+.navbar button {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #2100a5;
+  color: #eaeaea;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.navbar button:hover {
+  background: #000000;
+}

@@ -9,6 +9,10 @@ import UserProfile from './userProfile.jsx'
 import YourCritters from './yourCritters.jsx'
 import BattlePage from './battle/battlePage.jsx'
 import Results from './battle/results.jsx'
+import Sell from './marketplace/Sell.jsx'
+import Buy from './marketplace/Buy.jsx'
+import Leaderboard from './leaderBoard.jsx'
+import { AuthProvider } from './AuthContext';
 
 import {
   createBrowserRouter,
@@ -47,11 +51,27 @@ const router = createBrowserRouter([
   {
     path:'/results',
     element:<Results/>
+  },
+  {
+    path:'/sellYourCritter',
+    element:<Sell/>
+  },
+  {
+    path:'/marketplace',
+    element:<Buy/>
+  },
+  {
+    path:'/leaderboard',
+    element:<Leaderboard/>
   }
-]
-)
+]);
 
+const root = ReactDOM.createRoot(document.getElementById('root'));
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <RouterProvider router={router} />
-)
+root.render(
+  <React.StrictMode>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  </React.StrictMode>
+);

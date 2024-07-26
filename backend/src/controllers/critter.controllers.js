@@ -63,7 +63,61 @@ const fetchCritters = asyncHandler(async(req,res)=>{
     
 })
 
+const listItem = asyncHandler(async(req,res)=>{
+    const {id} = req.body
+    
+    if (!id) {
+        throw new ApiError(400,"Can't find critter id")
+    }
+
+    const updatedCritter = await Critter.findByIdAndUpdate(id,
+        {forSale:true}
+    )
+
+    if (!updatedCritter) {
+        return res.status(404).json({ message: 'Critter not found' });
+    }
+
+    res
+    .status(200)
+    .json(new ApiResponse(200,"Critter updated for sale"))
+})
+
+const unListItem = asyncHandler(async(req,res)=>{
+    const {id} = req.body
+    const masterId = req.user._id
+    
+    if (!id) {
+        throw new ApiError(400,"Can't find critter id")
+    }
+
+    const updatedCritter = await Critter.findByIdAndUpdate(id,
+        {
+            forSale:false,
+            master:masterId
+        }
+    )
+
+    if (!updatedCritter) {
+        return res.status(404).json({ message: 'Critter not found' });
+    }
+
+    res
+    .status(200)
+    .json(new ApiResponse(200,"Critter unlisted from sale"))
+})
+
+const fetchCrittersForSale = asyncHandler(async(req,res)=>{
+    const creatures = await Critter.find({ forSale: true }).exec();
+    res
+    .status(200)
+    .json(creatures)
+})
+
 export {
     claimNFT,
-    fetchCritters
+    fetchCritters,
+    listItem,
+    fetchCrittersForSale,
+    unListItem
 }

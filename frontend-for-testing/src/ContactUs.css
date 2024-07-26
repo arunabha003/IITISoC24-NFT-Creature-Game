@@ -1,0 +1,99 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.page-container {
+    padding-top: 80px; /* Adjust this value to match your navbar height */
+    min-height: 100vh;
+    background-color: #121212; /* Dark background for the crypto theme */
+    color: white;
+}
+
+.heading {
+    text-align: center;
+    font-size: 2.5rem;
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 2rem;
+    padding-top: 1rem;
+}
+
+.Socials {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 20px;
+}
+
+.social-card {
+    width: 250px;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #1a1a1a;
+    text-align: center;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.social-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.social-card h3 {
+    color: #58a6ff;
+    margin: 15px 0;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.social-icons a {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.social-icons a:hover {
+    transform: scale(1.2);
+}
+
+.social-icons img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+@media (max-width: 1200px) {
+    .Socials {
+        justify-content: space-around;
+    }
+}
+
+@media (max-width: 768px) {
+    .heading {
+        font-size: 2rem;
+    }
+    .social-card {
+        width: calc(50% - 20px);
+    }
+}
+
+@media (max-width: 480px) {
+    .social-card {
+        width: 100%;
+    }
+}

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser,login,logout,getCrittersHeHave,userProfile,addEXP } from "../controllers/user.controllers.js";
+import { registerUser,login,logout,getCrittersHeHave,userProfile,addEXP,leaderboard } from "../controllers/user.controllers.js";
 import {upload} from '../middlewares/file-upload-multer.middlewares.js'
 import { verifyTokens } from "../middlewares/auth.middlewares.js";
 
@@ -15,6 +15,7 @@ userRouter.route("/logout").get(verifyTokens,logout)
 userRouter.route("/crittersHave").get(verifyTokens,getCrittersHeHave)
 userRouter.route("/profile").get(verifyTokens,userProfile)
 userRouter.route("/addEXP").post(verifyTokens,addEXP)
+userRouter.route("/leaderboard").get(leaderboard)
 
 
 export default userRouter

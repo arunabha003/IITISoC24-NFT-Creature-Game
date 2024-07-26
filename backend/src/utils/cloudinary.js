@@ -14,8 +14,16 @@ export const uploadOnCloudinary = async function (filePath){
      const uploadResponse = await cloudinary.uploader
        .upload(
            filePath, {
-              resource_type:"image"
-           }
+            resource_type: "image",
+            quality: "auto:good", // Adjusts quality to balance file size
+            width: 800, // Adjust as needed
+            height: 800, // Adjust as needed
+            crop: "limit", // Crops image to fit the given dimensions
+            aspect_ratio: "1:1", // Ensures image is square if needed
+            eager: [
+                { width: 800, height: 800, crop: "limit", quality: "auto:good" }
+            ]
+        }
        )
        .catch((error) => {
            throw new ApiError(400,"Error in uploading file") ;

@@ -30,14 +30,6 @@ const userSchema = new Schema(
             type:Boolean,
             default:false
         },
-        battlesWon:{
-            type:Number,
-            default:0
-        },
-        battlesLost:{
-            type:Number,
-            default:0
-        },
         EXP:{
             type:Number,
             default:0

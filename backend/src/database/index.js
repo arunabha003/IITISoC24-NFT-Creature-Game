@@ -1,13 +1,11 @@
 import mongoose, { mongo } from 'mongoose'
 
-const DB_NAME = "cluster"
-
 async function connectDB(){
     try {
-        const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/databaseNameShit`)
+        const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/CryptoCrittersDB`)
         console.log(`/n Database Connected!!`)
     } catch (error) {
-        console.log("MongoDB connection error" , error)
+        console.log(" /n MongoDB connection error" , error)
     }
 }
 
