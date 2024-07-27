@@ -2,6 +2,7 @@ import { useEffect,useState} from 'react'
 import axios from 'axios'
 import CritterCard from "../src/yourCritterCard.jsx"
 import {connectMetamask} from '../utils/connectMetamask.js'
+import Navbar from './Navbar.jsx'
 
 
 const YourCritters = () => {
@@ -49,6 +50,7 @@ const YourCritters = () => {
   
   return (
     <>
+    <Navbar />
         <h1>Your Critters !</h1>
         {allCritterData && (<>
           {allCritterData.map(critter => (

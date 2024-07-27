@@ -25,7 +25,7 @@ const Navbar = () => {
   };
 
   const handleHowToPlayClick = () => {
-    navigate('/howtoplay');
+    navigate('/HowToPlay');
   };
 
   const handleTeamClick = () => {
@@ -41,12 +41,9 @@ const Navbar = () => {
   };
 
   return (
-    <header>
-      <div className="logo">
-        <button onClick={handleHomeClick}>CRYPTOCRITTERS</button>
-      </div>
+    <div className='navbawr'>
+      <a className="navbar-text" onClick={handleHomeClick}>CRYPTOCRITTERS</a>
       <div className="navbar">
-        <button onClick={handleHomeClick}>Home</button>
         <button onClick={handleMarketplaceClick}>Marketplace</button>
         <button onClick={handleLeaderboardClick}>Leaderboard</button>
         <button onClick={handleHowToPlayClick}>How To Play</button>
@@ -67,7 +64,7 @@ const Navbar = () => {
           </div>
         )}
       </div>
-    </header>
+      </div>
   );
 };
 

@@ -53,7 +53,8 @@ io.on('connection', (socket) => {
                         level: player1.level,
                         critterImageUrl: player1.critterImageUrl,
                         nickname: player1.nickname,
-                        health:gameState[roomId].player1.health
+                        health:gameState[roomId].player1.health,
+                        type:player1.type,
                     },
                     opponent: {
                         username: player2.username,
@@ -62,7 +63,8 @@ io.on('connection', (socket) => {
                         level: player2.level,
                         critterImageUrl: player2.critterImageUrl,
                         nickname: player2.nickname,
-                        health:gameState[roomId].player2.health
+                        health:gameState[roomId].player2.health,
+                        type:player1.type,
                     },
                     currentTurn: gameState[roomId].currentTurn
                 });
@@ -77,7 +79,8 @@ io.on('connection', (socket) => {
                         level: player2.level,
                         critterImageUrl: player2.critterImageUrl,
                         nickname: player2.nickname,
-                        health:gameState[roomId].player2.health
+                        health:gameState[roomId].player2.health,
+                        type:gameState[roomId].player2.type,
                     },
                     opponent: {
                         username: player1.username,
@@ -86,7 +89,8 @@ io.on('connection', (socket) => {
                         level: player1.level,
                         critterImageUrl: player1.critterImageUrl,
                         nickname: player1.nickname,
-                        health:gameState[roomId].player1.health
+                        health:gameState[roomId].player1.health,
+                        type:gameState[roomId].player1.type,
                     },
                     currentTurn: gameState[roomId].currentTurn
                 });
@@ -165,6 +169,8 @@ io.on('connection', (socket) => {
                     if (gameState[roomId][`player${numberNOD}`].NOD == 5 && gameState[roomId][`player${numberNOD}`].NOD>0) {
                       gameState[roomId][`player${numberNOD}`].NOD =gameState[roomId][`player${numberNOD}`].NOD - 1  
                     }
+
+                    console.log("attack type",player.type)
                     break;
                 case 'defend':
                     // console.log(`Player ${player.id} chose defense`);
@@ -176,11 +182,10 @@ io.on('connection', (socket) => {
                     console.log(`Unknown action ${action} from Player ${player.id}`);
                     break;
             }
-
             
             // Emit updated health to clients
-            playersocket.emit('updateHealth', { health: player.health ,opponentHealth:opponent.health });
-            opponentsocket.emit('updateHealth', { health: opponent.health ,opponentHealth:player.health });
+            playersocket.emit('updateHealth', { health: player.health ,opponentHealth:opponent.health,attackType : player.type });
+            opponentsocket.emit('updateHealth', { health: opponent.health ,opponentHealth:player.health,attackType : player.type });
 
             // Check if game over
             if (checkGameOver(roomId,player,opponent)) {
@@ -221,6 +226,7 @@ io.on('connection', (socket) => {
     }
     
     function getOpponentDefense(opponent,player) {
+      console.log(DefenseAdvantageofOpponent(opponent,player))
         return Math.ceil(
           opponent.baseDefense * (1 + opponent.NOD) * DefenseAdvantageofOpponent(opponent,player)
         );

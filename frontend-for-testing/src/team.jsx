@@ -1,12 +1,12 @@
 import React from 'react'
-import './ContactUs.css';
-import Navbar from '../Components/Navbar/Navbar'
-import aep from '../Assets/aep.jpg'
-import yash from '../Assets/yash.png'
-import shorya from '../Assets/shorya.png'
-import kanav from '../Assets/kanav.png'
-import insta from '../Assets/instagram.jpg'
-import github from '../Assets/github.jpg'
+import './team.css';
+import Navbar from '../src/Navbar.jsx'
+import aep from '../src/Assets/aep.jpg'
+import yash from '../src/Assets/yash.jpg'
+import shorya from '../src/Assets/shorya.jpg'
+import kanav from '../src/Assets/kanav.jpg'
+import insta from '../src/Assets/instagram.jpg'
+import github from '../src/Assets/github.jpg'
 
 function ContactUs() {
   return (

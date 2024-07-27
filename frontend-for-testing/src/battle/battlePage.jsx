@@ -6,6 +6,10 @@ import { ABI } from '../crittersABI.js';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { initSocket } from '../battle/WebSocketService.js';
+import Navbar from '../Navbar.jsx'
+import fireGif from '../Assets/fire.gif';
+import waterGif from '../Assets/water.gif';
+import grassGif from '../Assets/ground.gif'
 
 const BattlePage = () => {
   const navigate = useNavigate();
@@ -33,8 +37,110 @@ const BattlePage = () => {
   const [roomId, setRoomId] = useState(null); // Change to null initially
   const [matchmakingPage, setMatchmakingPage] = useState(true);
   const [currentTurn, setCurrentTurn] = useState(null); // Use null to indicate waiting state
+  const [type, setType] = useState(null); // Use null to indicate waiting state
+  const [opponentType, setOpponentType] = useState(null); // Use null to indicate waiting state
+  const [gifPath, setGifPath] = useState('');
+  const [showGif, setShowGif] = useState(false);
 
   axios.defaults.withCredentials = true;
+
+  useEffect(() => {
+    const socketInstance = initSocket();
+    setSocket(socketInstance);
+  }, []);
+
+  useEffect(() => {
+    useMetamask();
+  }, []);
+
+  useEffect(() => {
+    if (connectedUserAddress) {
+      if (walletVerification()) {
+        fetchUserProfile();
+        fetchData();
+      } else {
+        console.log("connect on same wallet");
+      }
+    }
+  }, [connectedUserAddress]);
+
+  useEffect(() => {
+    if (critterAddress && selectedCritterData) {
+      fetchLevel(critterAddress, selectedCritterData.tokenId);
+    }
+  }, [critterAddress, selectedCritterData]);
+
+  useEffect(() => {
+    if (selectedCritterLevel) {
+      setFighterInfo({ ...selectedCritterData, ...userData, level: selectedCritterLevel });
+      console.log({ ...selectedCritterData, ...userData, level: selectedCritterLevel })
+      setSendFighterInfoStatus("sending");
+    }
+  }, [selectedCritterLevel]);
+
+  useEffect(() => {
+    if (sendFighterInfoStatus === "sending" && fighterInfo && socket) {
+      socket.emit('fighterInfo', fighterInfo);
+    }
+  }, [sendFighterInfoStatus, fighterInfo, socket]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('updateHealth', ({ health, opponentHealth,attackType }) => {
+         // Determine GIF path based on attack type
+        let path = '';
+        switch (attackType) {
+          case 'fire':
+            path = fireGif;
+            break;
+          case 'water':
+            path = waterGif;
+            break;
+          case 'grass':
+            path = grassGif;
+            break;
+          default:
+            path = null // Fallback or default GIF
+        }
+        setGifPath(path);
+        setShowGif(true);
+
+        setTimeout(() => setShowGif(false), 1000);
+        setclientHeath(health);
+        setopponentHealth(opponentHealth);
+      });
+
+      socket.on('gameOver', ({ status, reward, winnerUsername, loserUsername }) => {
+        if (status === 'won') {
+          navigate('/results', {
+            state: {
+              status: 'won',
+              EXP: reward,
+              winnerUsername,
+              loserUsername
+            }
+          });
+        } else if (status === 'lost') {
+          navigate('/results', {
+            state: {
+              status: 'lost',
+              EXP: reward
+            }
+          });
+        }
+      });
+
+      socket.on('whoseTurn', ({ turn }) => {
+        setCurrentTurn(turn === socket.id ? "mine" : "opponent");
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [socket]);
 
   // Function to connect Metamask
   async function useMetamask() {
@@ -83,34 +189,6 @@ const BattlePage = () => {
     setAllCritterData(fetched.data);
   };
 
-  useEffect(() => {
-    useMetamask();
-  }, []);
-
-  useEffect(() => {
-    if (connectedUserAddress) {
-      if (walletVerification()) {
-        fetchUserProfile();
-        fetchData();
-      } else {
-        console.log("connect on same wallet");
-      }
-    }
-  }, [connectedUserAddress]);
-
-  useEffect(() => {
-    if (critterAddress && selectedCritterData) {
-      fetchLevel(critterAddress, selectedCritterData.tokenId);
-    }
-  }, [critterAddress, selectedCritterData]);
-
-  useEffect(() => {
-    if (selectedCritterLevel) {
-      setFighterInfo({ ...selectedCritterData, ...userData, level: selectedCritterLevel });
-      setSendFighterInfoStatus("sending");
-    }
-  }, [selectedCritterLevel]);
-
   // Function to handle critter selection
   const handleSubmit = (critter) => {
     setSelectedCritterData(critter);
@@ -126,7 +204,8 @@ const BattlePage = () => {
         setRoomId(roomId);
         setOpponent(opponent);
         setMatchmakingPage(false);
-        // setclientHeath(clientDetails.health)
+        setType(clientDetails.type)
+        setOpponentType(opponent.type)
         setopponentHealth(opponent.health)
         setCurrentTurn(currentTurn); // Set the initial turn
       });
@@ -136,52 +215,6 @@ const BattlePage = () => {
       alert("Select Critter to Match With");
     }
   };
-
-  useEffect(() => {
-    if (sendFighterInfoStatus === "sending" && fighterInfo) {
-      socket.emit('fighterInfo', fighterInfo);
-    }
-  }, [sendFighterInfoStatus, fighterInfo, socket]);
-
-  // Listen for updates from socket
-  useEffect(() => {
-    if (socket) {
-      socket.on('updateHealth', ({ health, opponentHealth }) => {
-        setclientHeath(health);
-        setopponentHealth(opponentHealth);
-      });
-
-      socket.on('gameOver', ({ status, reward, winnerUsername, loserUsername }) => {
-        if (status === 'won') {
-          navigate('/results', {
-            state: {
-              status: 'won',
-              EXP: reward,
-              winnerUsername,
-              loserUsername
-            }
-          });
-        } else if (status === 'lost') {
-          navigate('/results', {
-            state: {
-              status: 'lost',
-              EXP: reward
-            }
-          });
-        }
-      });
-
-      socket.on('whoseTurn', ({ turn }) => {
-        setCurrentTurn(turn === socket.id ? "mine" : "opponent");
-      });
-    }
-
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-    };
-  }, [socket]);
 
   const handleAttack = () => {
     console.log({ roomId, action: 'attack' })
@@ -197,10 +230,11 @@ const BattlePage = () => {
   }
 
   return (
-    <>
+    <div >
       {matchmakingPage && (
         <>
-          Battle Now!
+          <Navbar />
+         <h1>Battle Now!</h1> 
           <br />
           <div>
             <h3>Your Critters !</h3>
@@ -221,8 +255,9 @@ const BattlePage = () => {
 
       {/* Battle Interface */}
       {clientDetails && opponent && roomId && (
-        <div>
-          <h2>FIGHT!! Room ID : {roomId}</h2>
+        <>
+        <h2>FIGHT!! Room ID : {roomId}</h2>
+        <section className='battleground' >
           <div>
             <div id='opponent'>
               <CritterCard critter={opponent} />
@@ -234,6 +269,7 @@ const BattlePage = () => {
             <div id='us'>
               <h3>Your Info</h3>
               <CritterCard critter={clientDetails} />
+            {showGif && <img src={gifPath} alt="Attack Gif" className="gif-animation" />}
               <div>
                 <h3>Your Health: {clientHeath}</h3>
                 {currentTurn === 'mine' && (
@@ -245,10 +281,12 @@ const BattlePage = () => {
               </div>
             </div>
           </div>
-        </div>
+        </section>
+        </>
       )}
-    </>
+    </div>
   );
 };
 
 export default BattlePage;
+``

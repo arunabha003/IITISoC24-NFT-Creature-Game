@@ -1,0 +1,29 @@
+/* Image styling */
+.nft-card img {
+  border-radius: 10px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* NFT info section */
+.nft-info {
+  margin-top: 15px;
+}
+
+.nft-info h1 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: #000; /* Set text color to black */
+}
+
+.nft-info p {
+  font-size: 1em;
+  color: #000; /* Set text color to black */
+}
+
+/* Price and level styling */
+.nft-card p {
+  font-size: 1em;
+  margin: 10px 0;
+  color: #000; /* Set text color to black */
+}

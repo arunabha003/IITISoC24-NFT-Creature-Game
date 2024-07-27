@@ -8,7 +8,7 @@ function JoinUs() {
   const navigate = useNavigate();
 
   const handleClaimNFT = () => {
-    navigate('/user/register/claimFirstCritter');
+    navigate('/');
   };
 
   const [registerStatus, setRegisterStatus] = useState("Register");

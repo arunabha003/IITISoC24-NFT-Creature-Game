@@ -23,20 +23,20 @@ const App = () => {
                     <div className="nft-collection">
                         <div className="nft-card">
                             <img src={grass} alt="Grass NFT" />
-                            <h2>Sylivian Collosus</h2>
-                            <p>Rare and mystical, this NFT represents the mythical grass titan of ancient lore.</p>
+                            <h2>Sylvan Colossus</h2>
+                            <p>"Nature's Wrath - summoning the fury of the forest to unleash a devastating onslaught of vines, roots, and stone, overwhelming its enemies with natural might."</p>
                             <button>Buy Now</button>
                         </div>
                         <div className="nft-card">
                             <img src={fire} alt="Fox NFT" />
-                            <h2>Ignis Fox</h2>
-                            <p>Embodying the fiery spirit of the fox, this NFT is perfect for those who crave adventure.</p>
+                            <h2>Blazehound</h2>
+                            <p>A sleek, muscular fox with the attitude of a demon dog, acts like a ninja hound with immense speed and grace.</p>
                             <button>Buy Now</button>
                         </div>
                         <div className="nft-card">
                             <img src={water} alt="Dragon NFT" />
                             <h2>HydroConda</h2>
-                            <p>The ultimate water dragon NFT that channels the power of the ocean's depths.</p>
+                            <p>An awe-inspiring water dragon, Hydra Conda possesses multiple heads and shimmering scales, ruling the ocean with unrivaled ferocity and intelligence.</p>
                             <button>Buy Now</button>
                         </div>
                     </div>

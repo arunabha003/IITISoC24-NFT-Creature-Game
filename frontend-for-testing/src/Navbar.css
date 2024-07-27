@@ -1,12 +1,33 @@
 /* Navbar Styles */
-header {
+.navbawr {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #162447;
+  background: linear-gradient(135deg, #390085, #000000);
   color: #eaeaea;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+.navbar-text {
+  font-family: 'Bangers', cursive;
+  display: inline-block;
+  padding: 10px 20px;
+  color: #eaeaea;
+  font-size: 50px;
+  font-weight: bold;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.4s ease, color 0.4s ease;
+}
+
+.navbar-text:hover {
+  transform: scale(1.1); /* Adjust the scale value as needed */
+  color: #ffffff; /* Optional: Change color on hover */
+}
+
 
 .nav-profile {
   position: relative;
@@ -29,7 +50,7 @@ header {
   object-fit: cover;
 }
 
-/* Navbar Button Styles */
+
 .navbar {
   display: flex;
   align-items: center;
@@ -39,7 +60,7 @@ header {
   margin: 0 0.5rem;
   padding: 0.5rem 1rem;
   border: none;
-  background: #2100a5;
+  background: linear-gradient(to right, #1114b6, transparent);
   color: #eaeaea;
   cursor: pointer;
   border-radius: 5px;
@@ -47,5 +68,5 @@ header {
 }
 
 .navbar button:hover {
-  background: #000000;
+  background: #0058cb;
 }

@@ -11,9 +11,11 @@ import BattlePage from './battle/battlePage.jsx'
 import Results from './battle/results.jsx'
 import Sell from './marketplace/Sell.jsx'
 import Buy from './marketplace/Buy.jsx'
+import Team from './team.jsx'
 import Leaderboard from './leaderBoard.jsx'
-import { AuthProvider } from './AuthContext';
-
+import { AuthProvider } from './AuthContext'
+import HowToPlay from './HowToPlay.jsx'
+import PurchaseCritters from "./marketplace/PurchaseCritters.jsx"
 import {
   createBrowserRouter,
   RouterProvider,
@@ -63,6 +65,18 @@ const router = createBrowserRouter([
   {
     path:'/leaderboard',
     element:<Leaderboard/>
+  },
+  {
+    path:'/HowToPlay',
+    element:<HowToPlay/>
+  },
+  {
+    path:'/purchaseCritters',
+    element:<PurchaseCritters/>
+  },
+  {
+    path: '/team',
+    element:<Team/>
   }
 ]);
 

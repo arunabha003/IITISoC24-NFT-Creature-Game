@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
-import {ethers} from "ethers"
+import Navbar from './Navbar';
 
 const Leaderboard = () => {
     const [leaderboardData, setLeaderboardData] = useState(null);
@@ -26,7 +26,9 @@ const Leaderboard = () => {
         fetchLeaderboardData()
     }, []);
     return (
-        <>{leaderboardData && (
+        <>
+        <Navbar />
+        {leaderboardData && (
             <>
             <h2>Leaderboard</h2>
       <table>

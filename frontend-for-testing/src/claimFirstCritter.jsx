@@ -26,6 +26,7 @@ const ClaimFirstCritter = () => {
     let[nickname,setNickname]=useState(null)
     let[connectedUserAddress,setconnectedUserAddress]=useState(null)
     let[claimStatus,setclaimStatus]=useState(null)
+    let[type,setType]=useState(null)
 
     const formData = new FormData();
     
@@ -65,6 +66,7 @@ const ClaimFirstCritter = () => {
                 formData.append('name', selectedCritterName);
                 formData.append('critterImageUrl', selectedCritterImage);
                 formData.append('tokenId', tokenId);  
+                formData.append('type',type)
                 if (nickname) {
                     formData.append('nickname', nickname);
                 }
@@ -141,6 +143,7 @@ const ClaimFirstCritter = () => {
             return response.json()
         })
         .then((data)=>{
+            console.log(data)
             setcritterOneData(data)
         })
     }
@@ -167,9 +170,9 @@ const ClaimFirstCritter = () => {
         if(typeof window.ethereum!="undefined"){
             const contract = new ethers.Contract(selectedCritterAddress.toString(),ABI,signer)
             try{
-                const tx = await contract.claimNFT()
-                const receipt = await tx.wait(); // Wait for the transaction to be mined
-                const tokenId = receipt.events[0].args.tokenId.toString(); // Extract tokenId from the event logs
+                const tx = await contract.claimNFT("0x3aAFbe8352e465461906cD2Cf12d4f4559968153")
+                const receipt = await tx.wait(); 
+                const tokenId = receipt.events[0].args.tokenId.toString(); 
                 return tokenId
             }catch(error){
                 console.log("Error in Claiming NFT on Blockchain",error)
@@ -186,19 +189,22 @@ const ClaimFirstCritter = () => {
     //claimNFTs : 0x04839f187cA780263b38dd87FeB44979877D8A4f
 
     const choseCritter1 = async()=>{
-        setselectedCritterAddress("0x1f1CE383005c166E8077D24a201B059Aa7362e0B")
+        setselectedCritterAddress("0x311259f6A324D4F1c10e06066275eb85726ACe9e")
         setselectedCritterName("Ignis Fox") 
         setselectedCritterImage(`${critterOneData.image}`)
+        setType("fire")
     }
     const choseCritter2 = async()=>{
-        setselectedCritterAddress("0xe8a03A1D96ee43bdFfeD157e8d128E3D3C1Da3e5")
+        setselectedCritterAddress("0x3383CB3Ff7E1EBC7793DE1415E941eE385e05417")
         setselectedCritterName("Serplet") 
         setselectedCritterImage(`${critterTwoData.image}`)
+        setType("water")
     }
     const choseCritter3 = async()=>{
-        setselectedCritterAddress("0x6f41345Ae8602bb27Be89B472aAe3C9613beb633")
+        setselectedCritterAddress("0x8137c5210D8e42AE82716c3e37566bc4b66F6536")
         setselectedCritterName("Leafkin Behemoth") 
         setselectedCritterImage(`${critterThreeData.image}`)
+        setType("grass")
     }
 
     const handleSubmit = (e)=>{

@@ -4,8 +4,10 @@ import { ethers } from 'ethers';
 import { ABI } from '../nftABI';
 import { connectMetamask } from '../../utils/connectMetamask.js';
 import axios from 'axios';
+import Navbar from '../Navbar.jsx'
 
-const CritterDropdown = () => {
+
+const Sell = () => {
   axios.defaults.withCredentials = true;
 
   const { allCritterData } = useCritters();
@@ -48,32 +50,30 @@ const CritterDropdown = () => {
     return isValid;
   };
 
-    async function fetchLevel(nftaddress, tokenId) {
-      if (window.ethereum !== 'undefined') {
-        const contract = new ethers.Contract(nftaddress.toString(), ABI, signer);
-        try {
-          const level = await contract.getLevel(tokenId);
-          const levelToString = level.toString();
-          setSelectedCritterLevel(levelToString);
-          console.log(levelToString);
-        } catch (error) {
-          console.log("Error fetching level : Connect Metamask Correctly");
-        }
-      }
-    }
-
-  async function listItem(nftaddress, priceInEther, tokenId) {
+  async function fetchLevel(nftaddress, tokenId) {
     if (window.ethereum !== 'undefined') {
-      console.log("nft address ",nftaddress.toString())
-      console.log('price',priceInEther)
-      console.log('tokenId',tokenId)
       const contract = new ethers.Contract(nftaddress.toString(), ABI, signer);
       try {
-        const tx = await contract.listItem(tokenId, priceInEther);
+        const level = await contract.getLevel(tokenId);
+        const levelToString = level.toString();
+        setSelectedCritterLevel(levelToString);
+        console.log(levelToString);
+      } catch (error) {
+        console.log("Error fetching level : Connect Metamask Correctly");
+      }
+    }
+  }
+
+  async function listItem(nftaddress, price, tokenId) {
+    if (window.ethereum !== 'undefined') {
+      console.log("pice: ",price)
+      const contract = new ethers.Contract(nftaddress.toString(), ABI, signer);
+      try {
+        const tx = await contract.listItem(tokenId, price);
         const receipt = await tx.wait();
         return true
       } catch (error) {
-        console.log("Error listing item : Connect Metamask Correctly",error);
+        console.log("Error listing item : Connect Metamask Correctly", error);
       }
     }
   }
@@ -99,7 +99,8 @@ const CritterDropdown = () => {
   };
 
   async function onHandleSubmit() {
-    const tx = await listItem(selectedCritter.tokenAddress, priceEntered, selectedCritter.tokenId);
+    const price = parseFloat(priceEntered); // Ensure the price is a number
+    const tx = await listItem(selectedCritter.tokenAddress, price, selectedCritter.tokenId);
     if(tx){
       console.log("transaction made successfully listed , database code")
       console.log(selectedCritter.databaseId)
@@ -112,18 +113,16 @@ const CritterDropdown = () => {
         console.log(error)
       }
     }
-    // else{
-    //   console.log("error in making transaction onHandleSubmit!!!")
-    // }
   }
 
   const handleInput = (event) => {
-    console.log(event.target.value)
-    setPriceEntered(event.target.value);
+    console.log(event.target.value.toString())
+    setPriceEntered(event.target.value.toString());
   };
 
   return (
     <div>
+      <Navbar />
       <h2>Sell Form</h2>
       Connected Wallet Address: {connectedUserAddress}
       {allCritterData ? (
@@ -157,7 +156,7 @@ const CritterDropdown = () => {
       )}
 
       <form>
-        <input onChange={handleInput} name='price' placeholder='Enter Price In Ether You Would Like to Sell' value={priceEntered} />
+        <input onChange={handleInput} name='price' placeholder='Enter Price' value={priceEntered} />
       </form>
       {priceEntered}
       <div>
@@ -167,4 +166,4 @@ const CritterDropdown = () => {
   );
 };
 
-export default CritterDropdown;
+export default Sell;

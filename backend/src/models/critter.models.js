@@ -29,6 +29,10 @@ const critterSchema  = new mongoose.Schema(
         forSale : {
             type: Boolean,
             default:false
+        },
+        type:{
+            type:String,
+            required:true,
         }
     }
 )

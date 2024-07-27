@@ -1,0 +1,38 @@
+/* index.css */
+
+.flexbox-container {
+  display: flex;
+  flex-direction: column; /* Stack rows vertically */
+  gap: 10px; /* Optional: adds space between rows */
+  padding: 10px; /* Optional: adds padding around the container */
+}
+
+.top-row,
+.middle-row,
+.bottom-row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px; /* Optional: adds space between components in a row */
+  justify-content: space-around; /* Center items horizontally with equal spacing */
+}
+
+.top-row > *,
+.middle-row > *,
+.bottom-row > * {
+  flex: 1 1 20%; /* Each component will take up approximately 30% of the row width */
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+  padding: 10px; /* Optional: adds some spacing around components */
+}
+
+/* Adjust widths if you want different sizes for different rows */
+.bottom-row > * {
+  flex: 1 1 20%; /* Adjust this value as needed */
+}
+
+@media (max-width: 768px) {
+  .top-row > *,
+  .middle-row > *,
+  .bottom-row > * {
+    flex: 1 1 100%; /* On smaller screens, components take full width */
+  }
+}

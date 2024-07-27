@@ -6,6 +6,7 @@ import { ABI } from '../nftABI';
 import {ethers} from "ethers"
 import { connectMetamask } from '../../utils/connectMetamask';
 import { marketplaceABI } from './marketplaceABI';
+import Navbar from '../Navbar.jsx'
 
 const Buy = () => {
     const navigate = useNavigate()
@@ -116,40 +117,49 @@ const Buy = () => {
     }
 
     //marketplace : 
-    async function buyItem(NFTAddress,tokenId,critterId) {
-        if (walletVerified) {
-          if (await walletVerification()) {
-              if (window.ethereum !== 'undefined') {
-                const contract = new ethers.Contract("0x39f42213fB52cCA75b1BAc92e75741818342b822", marketplaceABI, signer);
-                try {
-                  const tx = await contract.buyItem(NFTAddress,tokenId);
-                  const reciept = await tx.wait()
-                  await removeData(critterId)
-                  settransactionCompletion(true)
-                  return true
-                } catch (error) {
-                  console.log("Connect Metamask",error);
-                }
+    async function buyItem(NFTAddress, tokenId, critterId, priceInEther) {
+      console.log(priceInEther)
+      if (walletVerified) {
+        if (await walletVerification()) {
+          if (window.ethereum !== 'undefined') {
+            const contract = new ethers.Contract("0xc0966dff235C4cf11fd5c39A68da29f46b9eBB67", marketplaceABI, signer);
+            try {
+              if (!priceInEther || isNaN(priceInEther)) {
+                throw new Error("Invalid price in Ether");
               }
-          }else{
-              console.log("wallet verification failed during buying ")
+              console.log(ethers.utils.parseEther(priceInEther))
+              const tx = await contract.buyItem(NFTAddress, tokenId, {
+                value: ethers.utils.parseEther(priceInEther)/1e18,
+                gasLimit: 1000000 // Convert the price to the correct format
+              });
+              const receipt = await tx.wait();
+              await removeData(critterId);
+              settransactionCompletion(true);
+              return true;
+            } catch (error) {
+              console.log("Connect Metamask", error);
+            }
           }
+        } else {
+          console.log("wallet verification failed during buying");
         }
+      }
+    }
+
+    async function purchaseCritters(){
+      navigate('/purchaseCritters')
     }
     
-    useEffect(() => {
-      if(transactionCompletion){
-          //database update
-      }
-    }, [])
     
 
     return (
         <div>
+          <Navbar />
             Connected Address : {connectedUserAddress}
             <br></br>
             <button onClick={sellYourCritter}>Sell your Critter</button>
-            <br></br>
+            <button onClick={purchaseCritters}>Purchase Critters</button>
+            <br></br> 
             Balance : {balance}
             <br></br>
             {allCritterData && (
@@ -157,7 +167,7 @@ const Buy = () => {
                     <div key={critter._id}>
                         <CritterCard critter={critter} />
                         <p>Price In Ethers : {prices[critter._id]?.price ?? "Connect Metamask!"}
-                            <button onClick={()=>(buyItem(critter.tokenAddress,critter.tokenId,critter._id))}>Buy</button>
+                            <button onClick={()=>(buyItem(critter.tokenAddress.toString(),critter.tokenId,critter._id,prices[critter._id].price))}>Buy</button>
                         </p>
                     </div>
                 ))
