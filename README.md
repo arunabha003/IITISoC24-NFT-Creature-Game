@@ -96,7 +96,7 @@ This project implements a multiplayer battle system using Node.js, Socket.IO, an
 ### Frontend
 
 1. Navigate to the frontend directory.
-2. Install dependencies with `npm install`.
+2. Install dependencies with `npm install`in both folders backend and frontend.
 3. Start the development server with `npm run dev`.
 
 ### Blockchain
